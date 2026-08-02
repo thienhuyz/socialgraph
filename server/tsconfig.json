@@ -3,7 +3,7 @@
     "ignoreDeprecations": "6.0",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "target": "ES2023",
+    "target": "ES2024",
     "outDir": "dist",
     "rootDir": "./src",
     "esModuleInterop": true,
