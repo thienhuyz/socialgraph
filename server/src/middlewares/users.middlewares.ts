@@ -88,6 +88,7 @@ export const registerValidator = validate(
           if (value !== req.body.password) {
             throw new Error('Passwords do not match')
           }
+          return true
         }
       }
     },
