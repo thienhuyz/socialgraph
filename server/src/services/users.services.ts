@@ -4,6 +4,7 @@ import databaseService from '~/services/database.services'
 import { hashPassword } from '~/utils/bcrypt'
 import signToken from '~/utils/jwt'
 import { TokenType } from '~/constants/enums'
+import { StringValue } from 'ms'
 class UsersService {
   private signAccessToken(user_id: string) {
     return signToken({
@@ -12,7 +13,7 @@ class UsersService {
         token_type: TokenType.AccessToken
       },
       options: {
-        expiresIn: Number(process.env.ACCESS_TOKEN_EXPIRES_IN)
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN as StringValue
       }
     })
   }
@@ -24,7 +25,7 @@ class UsersService {
         token_type: TokenType.RefreshToken
       },
       options: {
-        expiresIn: Number(process.env.REFRESH_TOKEN_EXPIRES_IN)
+        expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN as StringValue
       }
     })
   }
