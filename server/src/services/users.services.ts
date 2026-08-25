@@ -5,6 +5,8 @@ import { hashPassword } from '~/utils/bcrypt'
 import signToken from '~/utils/jwt'
 import { TokenType } from '~/constants/enums'
 import { StringValue } from 'ms'
+import { ObjectId } from 'mongodb'
+import RefreshToken from '~/models/schemas/RefreshToken.schema'
 class UsersService {
   private signAccessToken(user_id: string) {
     return signToken({
@@ -43,8 +45,10 @@ class UsersService {
       })
     )
     const user_id = result.insertedId.toString()
-
     const [access_token, refresh_token] = await this.signAccessAndRefreshTokens(user_id)
+    await databaseService.refreshTokens.insertOne(
+      new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })
+    )
     return {
       access_token,
       refresh_token

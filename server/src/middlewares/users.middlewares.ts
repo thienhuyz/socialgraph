@@ -3,25 +3,10 @@ import { validate } from '~/utils/validation'
 import usersService from '~/services/users.services'
 import { USERS_MESSAGES } from '~/constants/messages'
 import databaseService from '~/services/database.services'
+import { comparePassword, hashPassword } from '~/utils/bcrypt'
 
 export const loginValidator = validate(
   checkSchema({
-    name: {
-      notEmpty: {
-        errorMessage: USERS_MESSAGES.NAME_IS_REQUIRED
-      },
-      isString: {
-        errorMessage: USERS_MESSAGES.NAME_MUST_BE_A_STRING
-      },
-      isLength: {
-        options: {
-          min: 1,
-          max: 100
-        },
-        errorMessage: USERS_MESSAGES.NAME_LENGTH_MUST_BE_FROM_1_TO_100
-      },
-      trim: true
-    },
     email: {
       notEmpty: {
         errorMessage: USERS_MESSAGES.EMAIL_IS_REQUIRED
@@ -33,9 +18,17 @@ export const loginValidator = validate(
       custom: {
         options: async (value, { req }) => {
           const user = await databaseService.users.findOne({ email: value })
+
           if (user === null) {
-            throw new Error(USERS_MESSAGES.USER_NOT_FOUND)
+            throw new Error(USERS_MESSAGES.EMAIL_iS_INCORRECT)
           }
+
+          const isPasswordMatch = await comparePassword(req.body.password, user.password)
+
+          if (!isPasswordMatch) {
+            throw new Error(USERS_MESSAGES.PASSWORD_IS_INCORRECT)
+          }
+
           req.user = user
           return true
         }
