@@ -1,11 +1,9 @@
 import dns from 'node:dns'
-import { config } from 'dotenv'
 import { Db, MongoClient, Collection } from 'mongodb'
 import User from '~/models/schemas/User.schema'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
 
 dns.setServers(['1.1.1.1', '8.8.8.8'])
-config()
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@socialgraph.asitkbu.mongodb.net/?appName=socialgraph`
 
 class DatabaseService {
