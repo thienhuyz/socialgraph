@@ -7,6 +7,7 @@ import { TokenType } from '~/constants/enums'
 import { StringValue } from 'ms'
 import { ObjectId } from 'mongodb'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
+import { USERS_MESSAGES } from '~/constants/messages'
 class UsersService {
   private signAccessToken(user_id: string) {
     return signToken({
@@ -62,9 +63,19 @@ class UsersService {
 
   async login(user_id: string) {
     const [access_token, refresh_token] = await this.signAccessAndRefreshTokens(user_id)
+    await databaseService.refreshTokens.insertOne(
+      new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })
+    )
     return {
       access_token,
       refresh_token
+    }
+  }
+  async logout(refresh_token: string) {
+    await databaseService.refreshTokens.deleteOne({ token: refresh_token })
+
+    return {
+      message: USERS_MESSAGES.LOGOUT_SUCCESS
     }
   }
 }

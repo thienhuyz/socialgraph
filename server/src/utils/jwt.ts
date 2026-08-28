@@ -29,10 +29,10 @@ export const verifyToken = ({
   secretOrPublicKey?: string
 }) => {
   return new Promise<jwt.JwtPayload>((resolve, reject) => {
-    console.log(secretOrPublicKey)
     jwt.verify(token, secretOrPublicKey, (error, decoded) => {
       if (error) {
-        throw reject(error)
+        reject(error)
+        return
       }
       resolve(decoded as jwt.JwtPayload)
     })
