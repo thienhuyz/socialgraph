@@ -7,6 +7,8 @@ import databaseService from '~/services/database.services'
 import { comparePassword, hashPassword } from '~/utils/bcrypt'
 import { ErrorWithStatus } from '~/models/Errors'
 import { verifyToken } from '~/utils/jwt'
+import { JsonWebTokenError } from 'jsonwebtoken'
+import { capitalize } from 'lodash'
 
 export const loginValidator = validate(
   checkSchema(
@@ -194,8 +196,15 @@ export const accessTokenValidator = validate(
                 status: HTTP_STATUS.UNAUTHORIZED
               })
             }
-            const decoded_authorization = await verifyToken({ token: access_token })
-            req.decoded_authorization = decoded_authorization
+            try {
+              const decoded_authorization = await verifyToken({ token: access_token })
+              req.decoded_authorization = decoded_authorization
+            } catch (error) {
+              throw new ErrorWithStatus({
+                message: capitalize((error as JsonWebTokenError).message),
+                status: HTTP_STATUS.UNAUTHORIZED
+              })
+            }
             return true
           }
         }
@@ -228,10 +237,13 @@ export const refreshTokenValidator = validate(
               }
               req.decoded_refresh_token = decoded_refresh_token
             } catch (error) {
-              throw new ErrorWithStatus({
-                message: USERS_MESSAGES.REFRESH_TOKEN_IS_INVALID,
-                status: HTTP_STATUS.UNAUTHORIZED
-              })
+              if (error instanceof JsonWebTokenError) {
+                throw new ErrorWithStatus({
+                  message: capitalize(error.message),
+                  status: HTTP_STATUS.UNAUTHORIZED
+                })
+              }
+              throw error
             }
             return true
           }
