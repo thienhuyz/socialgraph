@@ -1,10 +1,11 @@
-import { checkSchema } from 'express-validator/lib/middlewares/schema'
+import { Request } from 'express'
+import { checkSchema } from 'express-validator'
 import { validate } from '~/utils/validation'
 import usersService from '~/services/users.services'
 import { USERS_MESSAGES } from '~/constants/messages'
 import HTTP_STATUS from '~/constants/httpStatus'
 import databaseService from '~/services/database.services'
-import { comparePassword, hashPassword } from '~/utils/bcrypt'
+import { comparePassword } from '~/utils/bcrypt'
 import { ErrorWithStatus } from '~/models/Errors'
 import { verifyToken } from '~/utils/jwt'
 import { JsonWebTokenError } from 'jsonwebtoken'
@@ -198,7 +199,7 @@ export const accessTokenValidator = validate(
             }
             try {
               const decoded_authorization = await verifyToken({ token: access_token })
-              req.decoded_authorization = decoded_authorization
+              ;(req as Request).decoded_authorization = decoded_authorization
             } catch (error) {
               throw new ErrorWithStatus({
                 message: capitalize((error as JsonWebTokenError).message),
@@ -235,7 +236,7 @@ export const refreshTokenValidator = validate(
                   status: HTTP_STATUS.UNAUTHORIZED
                 })
               }
-              req.decoded_refresh_token = decoded_refresh_token
+              ;(req as Request).decoded_refresh_token = decoded_refresh_token
             } catch (error) {
               if (error instanceof JsonWebTokenError) {
                 throw new ErrorWithStatus({

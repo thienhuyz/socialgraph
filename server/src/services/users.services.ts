@@ -1,4 +1,4 @@
-import { RegisterBody } from '~/models/requests/User.requests'
+import { RegisterReqBody } from '~/models/requests/User.requests'
 import User from '~/models/schemas/User.schema'
 import databaseService from '~/services/database.services'
 import { hashPassword } from '~/utils/bcrypt'
@@ -37,7 +37,7 @@ class UsersService {
     return Promise.all([this.signAccessToken(user_id), this.signRefreshToken(user_id)])
   }
 
-  async register(payload: RegisterBody) {
+  async register(payload: RegisterReqBody) {
     const result = await databaseService.users.insertOne(
       new User({
         ...payload,
