@@ -10,6 +10,7 @@ import { ErrorWithStatus } from '~/models/Errors'
 import { verifyToken } from '~/utils/jwt'
 import { JsonWebTokenError } from 'jsonwebtoken'
 import { capitalize } from 'lodash'
+import { TokenType } from '~/constants/enums'
 
 export const loginValidator = validate(
   checkSchema(
@@ -27,7 +28,7 @@ export const loginValidator = validate(
             const user = await databaseService.users.findOne({ email: value })
 
             if (user === null) {
-              throw new Error(USERS_MESSAGES.EMAIL_iS_INCORRECT)
+              throw new Error(USERS_MESSAGES.EMAIL_IS_INCORRECT)
             }
 
             const isPasswordMatch = await comparePassword(req.body.password, user.password)
@@ -35,8 +36,7 @@ export const loginValidator = validate(
             if (!isPasswordMatch) {
               throw new Error(USERS_MESSAGES.PASSWORD_IS_INCORRECT)
             }
-
-            req.user = user
+            ;(req as Request).user = user
             return true
           }
         }
@@ -167,7 +167,9 @@ export const registerValidator = validate(
         }
       },
       date_of_birth: {
-        notEmpty: true,
+        notEmpty: {
+          errorMessage: USERS_MESSAGES.DATE_OF_BIRTH_IS_REQUIRED
+        },
         isISO8601: {
           options: {
             strict: true,
@@ -199,12 +201,21 @@ export const accessTokenValidator = validate(
             }
             try {
               const decoded_authorization = await verifyToken({ token: access_token })
+              if (decoded_authorization.token_type !== TokenType.AccessToken) {
+                throw new ErrorWithStatus({
+                  message: USERS_MESSAGES.ACCESS_TOKEN_IS_INVALID,
+                  status: HTTP_STATUS.UNAUTHORIZED
+                })
+              }
               ;(req as Request).decoded_authorization = decoded_authorization
             } catch (error) {
-              throw new ErrorWithStatus({
-                message: capitalize((error as JsonWebTokenError).message),
-                status: HTTP_STATUS.UNAUTHORIZED
-              })
+              if (error instanceof JsonWebTokenError) {
+                throw new ErrorWithStatus({
+                  message: capitalize(error.message),
+                  status: HTTP_STATUS.UNAUTHORIZED
+                })
+              }
+              throw error
             }
             return true
           }
@@ -229,7 +240,12 @@ export const refreshTokenValidator = validate(
                 verifyToken({ token: value }),
                 databaseService.refreshTokens.findOne({ token: value })
               ])
-
+              if (decoded_refresh_token.token_type !== TokenType.RefreshToken) {
+                throw new ErrorWithStatus({
+                  message: USERS_MESSAGES.REFRESH_TOKEN_IS_INVALID,
+                  status: HTTP_STATUS.UNAUTHORIZED
+                })
+              }
               if (refresh_token === null) {
                 throw new ErrorWithStatus({
                   message: USERS_MESSAGES.USED_REFRESH_TOKEN_OR_NOT_EXIST,

@@ -21,16 +21,12 @@ export const registerController = async (
   res: Response,
   next: NextFunction
 ) => {
-  try {
-    const result = await usersService.register(req.body)
+  const result = await usersService.register(req.body)
 
-    return res.json({
-      message: USERS_MESSAGES.REGISTER_SUCCESS,
-      result
-    })
-  } catch (error) {
-    next(error)
-  }
+  return res.json({
+    message: USERS_MESSAGES.REGISTER_SUCCESS,
+    result
+  })
 }
 
 export const logoutController = async (req: Request<ParamsDictionary, any, LogoutReqBody>, res: Response) => {

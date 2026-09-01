@@ -1,5 +1,4 @@
 import { JwtPayload } from 'jsonwebtoken'
-import { intersection } from 'lodash'
 import { TokenType } from '~/constants/enums'
 export interface RegisterReqBody {
   name: string
