@@ -15,6 +15,7 @@ class UsersService {
         user_id,
         token_type: TokenType.AccessToken
       },
+      privateKey: process.env.ACCESS_TOKEN_SECRET as string,
       options: {
         expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN as StringValue
       }
@@ -27,6 +28,7 @@ class UsersService {
         user_id,
         token_type: TokenType.RefreshToken
       },
+      privateKey: process.env.REFRESH_TOKEN_SECRET as string,
       options: {
         expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN as StringValue
       }
