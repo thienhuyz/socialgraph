@@ -18,11 +18,7 @@ export const loginController = async (req: Request, res: Response) => {
   })
 }
 
-export const registerController = async (
-  req: Request<ParamsDictionary, any, RegisterReqBody>,
-  res: Response,
-  next: NextFunction
-) => {
+export const registerController = async (req: Request<ParamsDictionary, any, RegisterReqBody>, res: Response) => {
   const result = await usersService.register(req.body)
 
   return res.json({
@@ -52,4 +48,9 @@ export const emailVerifyController = async (req: Request, res: Response) => {
       message: USERS_MESSAGES.EMAIL_ALREADY_VERIFIED_BEFORE
     })
   }
+  const result = await usersService.verifyEmail(user_id)
+  return res.json({
+    message: USERS_MESSAGES.EMAIL_VERIFY_SUCCESS,
+    result
+  })
 }
