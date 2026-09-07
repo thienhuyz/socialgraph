@@ -8,6 +8,8 @@ import { StringValue } from 'ms'
 import { ObjectId } from 'mongodb'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
 import { USERS_MESSAGES } from '~/constants/messages'
+import { UserVerifyStatus } from '~/constants/enums'
+
 class UsersService {
   private signAccessToken(user_id: string) {
     return signToken({
@@ -104,7 +106,10 @@ class UsersService {
         {
           $set: {
             email_verify_token: '',
-            updated_at: new Date()
+            verify: UserVerifyStatus.Verified
+          },
+          $currentDate: {
+            updated_at: true
           }
         }
       )
@@ -113,6 +118,23 @@ class UsersService {
     return {
       access_token,
       refresh_token
+    }
+  }
+  async resendVerifyEmail(user_id: string) {
+    const email_verify_token = await this.signEmailVerifyToken(user_id)
+    await databaseService.users.updateOne(
+      { _id: new ObjectId(user_id) },
+      {
+        $set: {
+          email_verify_token
+        },
+        $currentDate: {
+          updated_at: true
+        }
+      }
+    )
+    return {
+      message: USERS_MESSAGES.EMAIL_VERIFY_RESEND_SUCCESS
     }
   }
 }
