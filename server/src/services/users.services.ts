@@ -15,7 +15,7 @@ class UsersService {
         user_id,
         token_type: TokenType.AccessToken
       },
-      privateKey: process.env.ACCESS_TOKEN_SECRET as string,
+      privateKey: process.env.JWT_SECRET_ACCESS_TOKEN as string,
       options: {
         expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN as StringValue
       }
@@ -28,7 +28,7 @@ class UsersService {
         user_id,
         token_type: TokenType.VerifyEmailToken
       },
-      privateKey: process.env.EMAIL_VERIFY_TOKEN_SECRET as string,
+      privateKey: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string,
       options: {
         expiresIn: process.env.EMAIL_VERIFY_TOKEN_EXPIRES_IN as StringValue
       }
@@ -41,7 +41,7 @@ class UsersService {
         user_id,
         token_type: TokenType.RefreshToken
       },
-      privateKey: process.env.REFRESH_TOKEN_SECRET as string,
+      privateKey: process.env.JWT_SECRET_REFRESH_TOKEN as string,
       options: {
         expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN as StringValue
       }
@@ -65,9 +65,8 @@ class UsersService {
       })
     )
     const [access_token, refresh_token] = await this.signAccessAndRefreshTokens(user_id.toString())
-    await databaseService.refreshTokens.insertOne(
-      new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })
-    )
+    await databaseService.refreshTokens.insertOne(new RefreshToken({ user_id: user_id, token: refresh_token }))
+
     return {
       access_token,
       refresh_token
