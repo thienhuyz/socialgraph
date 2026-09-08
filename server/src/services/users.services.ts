@@ -24,19 +24,6 @@ class UsersService {
     })
   }
 
-  private signEmailVerifyToken(user_id: string) {
-    return signToken({
-      payload: {
-        user_id,
-        token_type: TokenType.VerifyEmailToken
-      },
-      privateKey: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string,
-      options: {
-        expiresIn: process.env.EMAIL_VERIFY_TOKEN_EXPIRES_IN as StringValue
-      }
-    })
-  }
-
   private signRefreshToken(user_id: string) {
     return signToken({
       payload: {
@@ -52,6 +39,32 @@ class UsersService {
 
   private signAccessAndRefreshTokens(user_id: string) {
     return Promise.all([this.signAccessToken(user_id), this.signRefreshToken(user_id)])
+  }
+
+  private signEmailVerifyToken(user_id: string) {
+    return signToken({
+      payload: {
+        user_id,
+        token_type: TokenType.VerifyEmailToken
+      },
+      privateKey: process.env.JWT_SECRET_EMAIL_VERIFY_TOKEN as string,
+      options: {
+        expiresIn: process.env.EMAIL_VERIFY_TOKEN_EXPIRES_IN as StringValue
+      }
+    })
+  }
+
+  private signForgotPasswordToken(user_id: string) {
+    return signToken({
+      payload: {
+        user_id,
+        token_type: TokenType.ForgotPasswordToken
+      },
+      privateKey: process.env.JWT_SECRET_FORGOT_PASSWORD_TOKEN as string,
+      options: {
+        expiresIn: process.env.FORGOT_PASSWORD_TOKEN_EXPIRES_IN as StringValue
+      }
+    })
   }
 
   async register(payload: RegisterReqBody) {
@@ -135,6 +148,23 @@ class UsersService {
     )
     return {
       message: USERS_MESSAGES.EMAIL_VERIFY_RESEND_SUCCESS
+    }
+  }
+  async forgotPassword(user_id: string) {
+    const forgot_password_token = await this.signForgotPasswordToken(user_id)
+    await databaseService.users.updateOne(
+      { _id: new ObjectId(user_id) },
+      {
+        $set: {
+          forgot_password_token
+        },
+        $currentDate: {
+          updated_at: true
+        }
+      }
+    )
+    return {
+      message: USERS_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD
     }
   }
 }
