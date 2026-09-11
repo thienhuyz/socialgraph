@@ -1,6 +1,12 @@
 import { Request, Response, NextFunction } from 'express'
 import usersService from '~/services/users.services'
-import { RegisterReqBody, LogoutReqBody, TokenPayload, ResetPasswordReqBody } from '~/models/requests/User.requests'
+import {
+  RegisterReqBody,
+  LogoutReqBody,
+  TokenPayload,
+  ResetPasswordReqBody,
+  RefreshTokenReqBody
+} from '~/models/requests/User.requests'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { ObjectId } from 'mongodb'
@@ -34,6 +40,19 @@ export const logoutController = async (req: Request<ParamsDictionary, any, Logou
   const result = await usersService.logout(refresh_token)
 
   return res.json(result)
+}
+
+export const refreshTokenController = async (
+  req: Request<ParamsDictionary, any, RefreshTokenReqBody>,
+  res: Response
+) => {
+  const { refresh_token } = req.body
+  const { user_id, verify } = req.decoded_refresh_token as TokenPayload
+  const result = await usersService.refreshToken({ user_id, verify, refresh_token })
+  return res.json({
+    message: USERS_MESSAGES.REFRESH_TOKEN_SUCCESS,
+    result
+  })
 }
 
 export const emailVerifyController = async (req: Request, res: Response) => {
