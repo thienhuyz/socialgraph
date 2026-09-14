@@ -5,7 +5,8 @@ import {
   LogoutReqBody,
   TokenPayload,
   ResetPasswordReqBody,
-  RefreshTokenReqBody
+  RefreshTokenReqBody,
+  UpdateMeReqBody
 } from '~/models/requests/User.requests'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { USERS_MESSAGES } from '~/constants/messages'
@@ -114,11 +115,21 @@ export const resetPasswordController = async (
   return res.json(result)
 }
 
-export const getUserController = async (req: Request, res: Response) => {
+export const getMeController = async (req: Request, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
-  const result = await usersService.getUser(user_id)
+  const result = await usersService.getMe(user_id)
   return res.json({
-    message: USERS_MESSAGES.GET_USER_SUCCESS,
+    message: USERS_MESSAGES.GET_ME_SUCCESS,
+    result: result
+  })
+}
+
+export const updateMeController = async (req: Request<ParamsDictionary, any, UpdateMeReqBody>, res: Response) => {
+  const { user_id } = req.decoded_authorization as TokenPayload
+  const { body } = req
+  const result = await usersService.updateMe(user_id, body)
+  return res.json({
+    message: USERS_MESSAGES.UPDATE_ME_SUCCESS,
     result: result
   })
 }
