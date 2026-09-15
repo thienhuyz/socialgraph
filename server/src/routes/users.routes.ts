@@ -10,7 +10,8 @@ import {
   verifyForgotPasswordTokenController,
   resetPasswordController,
   getMeController,
-  updateMeController
+  updateMeController,
+  getProfileController
 } from '~/controllers/users.controllers'
 import { filterMiddleware } from '~/middlewares/common.middlewares'
 import {
@@ -61,5 +62,6 @@ usersRouter.patch(
   ]),
   wrapRequestHandler(updateMeController)
 )
+usersRouter.get('/:username', wrapRequestHandler(getProfileController))
 
 export default usersRouter

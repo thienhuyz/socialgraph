@@ -6,7 +6,8 @@ import {
   TokenPayload,
   ResetPasswordReqBody,
   RefreshTokenReqBody,
-  UpdateMeReqBody
+  UpdateMeReqBody,
+  GetProfileReqParams
 } from '~/models/requests/User.requests'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { USERS_MESSAGES } from '~/constants/messages'
@@ -130,6 +131,15 @@ export const updateMeController = async (req: Request<ParamsDictionary, any, Upd
   const result = await usersService.updateMe(user_id, body)
   return res.json({
     message: USERS_MESSAGES.UPDATE_ME_SUCCESS,
+    result: result
+  })
+}
+
+export const getProfileController = async (req: Request<GetProfileReqParams>, res: Response) => {
+  const { username } = req.params
+  const result = await usersService.getProfile(username)
+  return res.json({
+    message: USERS_MESSAGES.GET_PROFILE_SUCCESS,
     result: result
   })
 }
