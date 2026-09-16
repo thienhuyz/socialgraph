@@ -2,6 +2,7 @@ import dns from 'node:dns'
 import { Db, MongoClient, Collection } from 'mongodb'
 import User from '~/models/schemas/User.schema'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
+import Follower from '~/models/schemas/Follower.schema'
 
 dns.setServers(['1.1.1.1', '8.8.8.8'])
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@socialgraph.asitkbu.mongodb.net/?appName=socialgraph`
@@ -29,6 +30,10 @@ class DatabaseService {
 
   get refreshTokens(): Collection<RefreshToken> {
     return this.db.collection(process.env.DB_REFRESH_TOKENS_COLLECTION as string)
+  }
+
+  get followers(): Collection<Follower> {
+    return this.db.collection(process.env.DB_FOLLOWERS_TOKENS_COLLECTION as string)
   }
 }
 
