@@ -164,6 +164,30 @@ export const imageSchema: ParamSchema = {
   }
 }
 
+export const user_idSchema: ParamSchema = {
+  custom: {
+    options: async (value: string, { req }) => {
+      if (!ObjectId.isValid(value)) {
+        throw new ErrorWithStatus({
+          message: USERS_MESSAGES.INVALID_USER_ID,
+          status: HTTP_STATUS.NOT_FOUND
+        })
+      }
+
+      const followed_user = await databaseService.users.findOne({
+        _id: new ObjectId(value)
+      })
+
+      if (followed_user === null) {
+        throw new ErrorWithStatus({
+          message: USERS_MESSAGES.USER_NOT_FOUND,
+          status: HTTP_STATUS.NOT_FOUND
+        })
+      }
+    }
+  }
+}
+
 export const loginValidator = validate(
   checkSchema(
     {
@@ -410,102 +434,95 @@ export const verifyValidator = (req: Request, res: Response, next: NextFunction)
 }
 
 export const updateMeValidator = validate(
-  checkSchema({
-    name: {
-      ...nameSchema,
-      optional: true,
-      notEmpty: undefined
-    },
-    date_of_birth: {
-      ...date_of_birthSchema,
-      optional: true,
-      notEmpty: undefined
-    },
-    bio: {
-      optional: true,
-      isString: {
-        errorMessage: USERS_MESSAGES.BIO_MUST_BE_STRING
+  checkSchema(
+    {
+      name: {
+        ...nameSchema,
+        optional: true,
+        notEmpty: undefined
       },
-      trim: true,
-      isLength: {
-        options: {
-          min: 1,
-          max: 200
-        },
-        errorMessage: USERS_MESSAGES.BIO_LENGTH
-      }
-    },
-    location: {
-      optional: true,
-      isString: {
-        errorMessage: USERS_MESSAGES.LOCATION_MUST_BE_STRING
+      date_of_birth: {
+        ...date_of_birthSchema,
+        optional: true,
+        notEmpty: undefined
       },
-      trim: true,
-      isLength: {
-        options: {
-          min: 1,
-          max: 200
+      bio: {
+        optional: true,
+        isString: {
+          errorMessage: USERS_MESSAGES.BIO_MUST_BE_STRING
         },
-        errorMessage: USERS_MESSAGES.LOCATION_LENGTH
-      }
-    },
-    website: {
-      optional: true,
-      isString: {
-        errorMessage: USERS_MESSAGES.WEBSITE_MUST_BE_STRING
+        trim: true,
+        isLength: {
+          options: {
+            min: 1,
+            max: 200
+          },
+          errorMessage: USERS_MESSAGES.BIO_LENGTH
+        }
       },
-      trim: true,
-      isLength: {
-        options: {
-          min: 1,
-          max: 200
+      location: {
+        optional: true,
+        isString: {
+          errorMessage: USERS_MESSAGES.LOCATION_MUST_BE_STRING
         },
-        errorMessage: USERS_MESSAGES.WEBSITE_LENGTH
-      }
-    },
-    username: {
-      optional: true,
-      isString: {
-        errorMessage: USERS_MESSAGES.USERNAME_MUST_BE_STRING
+        trim: true,
+        isLength: {
+          options: {
+            min: 1,
+            max: 200
+          },
+          errorMessage: USERS_MESSAGES.LOCATION_LENGTH
+        }
       },
-      trim: true,
-      isLength: {
-        options: {
-          min: 1,
-          max: 50
+      website: {
+        optional: true,
+        isString: {
+          errorMessage: USERS_MESSAGES.WEBSITE_MUST_BE_STRING
         },
-        errorMessage: USERS_MESSAGES.USERNAME_LENGTH
-      }
+        trim: true,
+        isLength: {
+          options: {
+            min: 1,
+            max: 200
+          },
+          errorMessage: USERS_MESSAGES.WEBSITE_LENGTH
+        }
+      },
+      username: {
+        optional: true,
+        isString: {
+          errorMessage: USERS_MESSAGES.USERNAME_MUST_BE_STRING
+        },
+        trim: true,
+        isLength: {
+          options: {
+            min: 1,
+            max: 50
+          },
+          errorMessage: USERS_MESSAGES.USERNAME_LENGTH
+        }
+      },
+      avatar: imageSchema,
+      cover_photo: imageSchema
     },
-    avatar: imageSchema,
-    cover_photo: imageSchema
-  })
+    ['body']
+  )
 )
 
 export const followValidator = validate(
-  checkSchema({
-    followed_user_id: {
-      custom: {
-        options: async (value: string, { req }) => {
-          if (!ObjectId.isValid(value)) {
-            throw new ErrorWithStatus({
-              message: USERS_MESSAGES.INVALID_FOLLOWED_USER_ID,
-              status: HTTP_STATUS.NOT_FOUND
-            })
-          }
+  checkSchema(
+    {
+      followed_user_id: user_idSchema
+    },
+    ['body']
+  )
+)
 
-          const followed_user = await databaseService.users.findOne({
-            _id: new ObjectId(value)
-          })
-
-          if (followed_user === null) {
-            throw new ErrorWithStatus({
-              message: USERS_MESSAGES.USER_NOT_FOUND,
-              status: HTTP_STATUS.NOT_FOUND
-            })
-          }
-        }
-      }
-    }
-  })
+export const unfollowValidator = validate(
+  checkSchema(
+    {
+      followed_user_id: user_idSchema
+    },
+    ['params']
+  )
 )
