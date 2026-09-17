@@ -123,7 +123,7 @@ class UsersService {
   async verifyEmail({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
     const [token] = await Promise.all([
       this.signAccessAndRefreshTokens({ user_id, verify }),
-      await databaseService.users.updateOne(
+      databaseService.users.updateOne(
         { _id: new ObjectId(user_id) },
         {
           $set: {
@@ -137,6 +137,9 @@ class UsersService {
       )
     ])
     const [access_token, refresh_token] = token
+    await databaseService.refreshTokens.insertOne(
+      new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })
+    )
     return {
       access_token,
       refresh_token
