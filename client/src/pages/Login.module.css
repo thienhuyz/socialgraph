@@ -1,0 +1,447 @@
+/* Login Page Styling for HNG */
+
+.loginWrapper {
+  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  background-color: #f8fafc;
+  overflow: hidden;
+}
+
+/* Left Hero Banner */
+.heroSection {
+  flex: 1.1;
+  background: linear-gradient(135deg, #1a2234 0%, #2e3a59 50%, #3c4c74 100%);
+  color: #ffffff;
+  padding: 60px 48px;
+  padding: 48px 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* Geometric web pattern overlay */
+.heroSection::before {
+  content: "";
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(
+    circle,
+    rgba(96, 165, 250, 0.15) 0%,
+    rgba(46, 58, 89, 0) 70%
+  );
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.heroTop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 2;
+}
+
+.heroLogo {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.heroBrandName {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #ffffff;
+}
+
+.heroBody {
+  max-width: 520px;
+  z-index: 2;
+  margin: 40px 0;
+  margin: 20px 0;
+}
+
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #93c5fd;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  margin-bottom: 20px;
+  margin-bottom: 16px;
+}
+
+.heroTitle {
+  font-size: 40px;
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -1px;
+  color: #ffffff;
+  margin-bottom: 16px;
+  margin-bottom: 14px;
+}
+
+.heroSubtitle {
+  font-size: 16px;
+  font-size: 15px;
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+.featureList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 28px;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #e2e8f0;
+}
+
+.featureIconBox {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #60a5fa;
+  flex-shrink: 0;
+}
+
+.heroFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 24px;
+  padding-top: 20px;
+  font-size: 13px;
+  color: #94a3b8;
+  z-index: 2;
+}
+
+.statsHighlight {
+  display: flex;
+  gap: 24px;
+}
+
+.statNumber {
+  font-weight: 800;
+  color: #ffffff;
+  font-size: 16px;
+}
+
+/* Right Form Section */
+/* Right Form Section - Cố định vị trí trên đầu để không bị nhảy khi chuyển tab */
+.formSection {
+  flex: 0.9;
+  display: flex;
+  align-items: center;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 24px;
+  background-color: #ffffff;
+  height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.formCard {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  margin: auto 0;
+  padding: 10px 0;
+}
+
+.formHeader {
+  margin-bottom: 28px;
+  margin-bottom: 20px;
+  min-height: 64px;
+}
+
+.mobileBrand {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.formTitle {
+  font-size: 28px;
+  font-weight: 800;
+  color: #2e3a59;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+  line-height: 1.2;
+}
+
+.formSubtitle {
+  font-size: 14px;
+  color: #64748b;
+  min-height: 20px;
+}
+
+/* Tab Switcher (Login / Register) */
+.tabSwitcher {
+  display: flex;
+  background-color: #f1f5f9;
+  padding: 4px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  margin-bottom: 20px;
+}
+
+.tabBtn {
+  flex: 1;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #64748b;
+  border-radius: 9px;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.tabBtn.activeTab {
+  background-color: #ffffff;
+  color: #2e3a59;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+/* Form Fields */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+  margin-bottom: 16px;
+}
+
+.formLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  background-color: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0 14px;
+  transition: all 0.2s ease;
+  height: 46px;
+  height: 44px;
+}
+
+.inputWrapper:focus-within {
+  border-color: #2e3a59;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(46, 58, 89, 0.1);
+}
+
+.inputIcon {
+  color: #94a3b8;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.textInput {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+  color: #1e293b;
+}
+
+.togglePasswordBtn {
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.togglePasswordBtn:hover {
+  color: #2e3a59;
+}
+
+.formOptions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  margin-bottom: 20px;
+  font-size: 13px;
+}
+
+.rememberLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
+  cursor: pointer;
+  user-select: none;
+}
+
+.forgotLink {
+  color: #2e3a59;
+  font-weight: 600;
+  transition: text-decoration 0.2s;
+}
+
+.forgotLink:hover {
+  text-decoration: underline;
+}
+
+/* Submit Button */
+.submitBtn {
+  background: linear-gradient(135deg, #2e3a59 0%, #3f507b 100%);
+  color: #ffffff;
+  padding: 13px;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(46, 58, 89, 0.25);
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.submitBtn:hover {
+  background: linear-gradient(135deg, #242e47 0%, #344368 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(46, 58, 89, 0.3);
+}
+
+.submitBtn:active {
+  transform: translateY(0);
+}
+
+.submitBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Social Login Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 24px 0;
+  margin: 18px 0;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.divider span {
+  padding: 0 12px;
+  font-weight: 500;
+}
+
+.socialGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.socialBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  padding: 9px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  background-color: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.socialBtn:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.socialIcon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Footer note */
+.termsNote {
+  margin-top: 24px;
+  margin-top: 18px;
+  text-align: center;
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+.termsLink {
+  color: #2e3a59;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+  .loginWrapper {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+  .heroSection {
+    display: none;
+  }
+  .formSection {
+    flex: 1;
+    height: auto;
+    min-height: 100vh;
+    padding: 32px 20px;
+    align-items: center;
+  }
+  .mobileBrand {
+    display: flex;
+  }
+}

@@ -1,17 +1,14 @@
 import { createBrowserRouter } from "react-router";
-import App from "./App";
+import { Home, Login } from "./pages";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
-    children: [
-      // Các route con sau này bạn có thể thêm ở đây
-      {
-        path: "about",
-        element: <div>Trang Giới thiệu</div>,
-      },
-    ],
+    element: <Home />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
   },
   {
     path: "*",
