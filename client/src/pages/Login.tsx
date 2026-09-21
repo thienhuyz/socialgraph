@@ -24,10 +24,11 @@ export default function Login() {
 
   // Form states
   const [formData, setFormData] = useState({
-    fullName: "",
+    name: "",
     email: "",
+    date_of_birth: "",
     password: "",
-    confirmPassword: "",
+    confirm_password: "",
     rememberMe: true,
   });
 
@@ -47,7 +48,7 @@ export default function Login() {
     setTimeout(() => {
       setIsLoading(false);
       const userName =
-        formData.fullName.trim() ||
+        formData.name.trim() ||
         formData.email.split("@")[0] ||
         "Thành viên HNG";
       localStorage.setItem(
@@ -140,7 +141,10 @@ export default function Login() {
             </span>
           </div>
 
-          <div className={styles.formHeader}>
+          <div
+            className={styles.formHeader}
+            key={isRegister ? "register-header" : "login-header"}
+          >
             <h2 className={styles.formTitle}>
               {isRegister ? "Tạo tài khoản HNG" : "Chào mừng trở lại!"}
             </h2>
@@ -170,7 +174,11 @@ export default function Login() {
           </div>
 
           {/* Auth Form */}
-          <form onSubmit={handleSubmit}>
+          <form
+            key={isRegister ? "register-form" : "login-form"}
+            onSubmit={handleSubmit}
+            className={styles.authForm}
+          >
             {isRegister && (
               <div className={styles.formGroup}>
                 <label className={styles.formLabel}>Họ và tên</label>
@@ -178,11 +186,28 @@ export default function Login() {
                   <User size={18} className={styles.inputIcon} />
                   <input
                     type="text"
-                    name="fullName"
+                    name="name"
                     required
-                    value={formData.fullName}
+                    value={formData.name}
                     onChange={handleChange}
                     placeholder="Ví dụ: Nguyễn Văn A"
+                    className={styles.textInput}
+                  />
+                </div>
+              </div>
+            )}
+
+            {isRegister && (
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>{"Ng\u00e0y sinh"}</label>
+                <div className={styles.inputWrapper}>
+                  <input
+                    type="date"
+                    name="date_of_birth"
+                    required
+                    value={formData.date_of_birth}
+                    onChange={handleChange}
+                    max={new Date().toISOString().slice(0, 10)}
                     className={styles.textInput}
                   />
                 </div>
@@ -196,7 +221,7 @@ export default function Login() {
               <div className={styles.inputWrapper}>
                 <Mail size={18} className={styles.inputIcon} />
                 <input
-                  type="text"
+                  type="email"
                   name="email"
                   required
                   value={formData.email}
@@ -215,6 +240,8 @@ export default function Login() {
                   type={showPassword ? "text" : "password"}
                   name="password"
                   required
+                  minLength={6}
+                  autoComplete={isRegister ? "new-password" : "current-password"}
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="••••••••"
@@ -237,9 +264,11 @@ export default function Login() {
                   <Lock size={18} className={styles.inputIcon} />
                   <input
                     type={showPassword ? "text" : "password"}
-                    name="confirmPassword"
+                    name="confirm_password"
                     required
-                    value={formData.confirmPassword}
+                    minLength={6}
+                    autoComplete="new-password"
+                    value={formData.confirm_password}
                     onChange={handleChange}
                     placeholder="••••••••"
                     className={styles.textInput}
