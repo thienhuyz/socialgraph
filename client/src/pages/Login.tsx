@@ -16,6 +16,41 @@ import {
   Loader2,
 } from "lucide-react";
 
+const getGoogleAuthUrl = () => {
+  const { VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_REDIRECT_URI } = import.meta.env;
+  const url = "https://accounts.google.com/o/oauth2/v2/auth";
+  const query = {
+    client_id: VITE_GOOGLE_CLIENT_ID,
+    redirect_uri: VITE_GOOGLE_REDIRECT_URI,
+    response_type: "code",
+    scope: [
+      "https://www.googleapis.com/auth/userinfo.profile",
+      "https://www.googleapis.com/auth/userinfo.email",
+    ].join(" "),
+    prompt: "consent",
+  };
+  const queryString = new URLSearchParams(query).toString();
+  return `${url}?${queryString}`;
+};
+const googleOAuthUrl = getGoogleAuthUrl();
+
+function Collapse({
+  open,
+  children,
+}: {
+  open: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={`${styles.collapse} ${open ? styles.collapseOpen : ""}`}
+      aria-hidden={!open}
+    >
+      <div className={styles.collapseInner}>{children}</div>
+    </div>
+  );
+}
+
 export default function Login() {
   const navigate = useNavigate();
   const [isRegister, setIsRegister] = useState(false);
@@ -173,13 +208,10 @@ export default function Login() {
             </button>
           </div>
 
-          {/* Auth Form */}
-          <form
-            key={isRegister ? "register-form" : "login-form"}
-            onSubmit={handleSubmit}
-            className={styles.authForm}
-          >
-            {isRegister && (
+          {/* Auth Form (giữ nguyên form, chỉ đóng/mở các trường riêng) */}
+          <form onSubmit={handleSubmit} className={styles.authForm}>
+            {/* Chỉ hiện ở Đăng ký: Họ tên + Ngày sinh */}
+            <Collapse open={isRegister}>
               <div className={styles.formGroup}>
                 <label className={styles.formLabel}>Họ và tên</label>
                 <div className={styles.inputWrapper}>
@@ -187,7 +219,8 @@ export default function Login() {
                   <input
                     type="text"
                     name="name"
-                    required
+                    required={isRegister}
+                    tabIndex={isRegister ? 0 : -1}
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="Ví dụ: Nguyễn Văn A"
@@ -195,16 +228,15 @@ export default function Login() {
                   />
                 </div>
               </div>
-            )}
 
-            {isRegister && (
               <div className={styles.formGroup}>
-                <label className={styles.formLabel}>{"Ng\u00e0y sinh"}</label>
+                <label className={styles.formLabel}>Ngày sinh</label>
                 <div className={styles.inputWrapper}>
                   <input
                     type="date"
                     name="date_of_birth"
-                    required
+                    required={isRegister}
+                    tabIndex={isRegister ? 0 : -1}
                     value={formData.date_of_birth}
                     onChange={handleChange}
                     max={new Date().toISOString().slice(0, 10)}
@@ -212,8 +244,9 @@ export default function Login() {
                   />
                 </div>
               </div>
-            )}
+            </Collapse>
 
+            {/* Email */}
             <div className={styles.formGroup}>
               <label className={styles.formLabel}>
                 Email hoặc Tên người dùng
@@ -232,6 +265,7 @@ export default function Login() {
               </div>
             </div>
 
+            {/* Mật khẩu */}
             <div className={styles.formGroup}>
               <label className={styles.formLabel}>Mật khẩu</label>
               <div className={styles.inputWrapper}>
@@ -241,7 +275,9 @@ export default function Login() {
                   name="password"
                   required
                   minLength={6}
-                  autoComplete={isRegister ? "new-password" : "current-password"}
+                  autoComplete={
+                    isRegister ? "new-password" : "current-password"
+                  }
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="••••••••"
@@ -251,13 +287,15 @@ export default function Login() {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className={styles.togglePasswordBtn}
+                  aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
 
-            {isRegister && (
+            {/* Chỉ hiện ở Đăng ký: Xác nhận mật khẩu */}
+            <Collapse open={isRegister}>
               <div className={styles.formGroup}>
                 <label className={styles.formLabel}>Xác nhận mật khẩu</label>
                 <div className={styles.inputWrapper}>
@@ -265,7 +303,8 @@ export default function Login() {
                   <input
                     type={showPassword ? "text" : "password"}
                     name="confirm_password"
-                    required
+                    required={isRegister}
+                    tabIndex={isRegister ? 0 : -1}
                     minLength={6}
                     autoComplete="new-password"
                     value={formData.confirm_password}
@@ -275,25 +314,31 @@ export default function Login() {
                   />
                 </div>
               </div>
-            )}
+            </Collapse>
 
-            {!isRegister && (
+            {/* Chỉ hiện ở Đăng nhập: Ghi nhớ + Quên mật khẩu */}
+            <Collapse open={!isRegister}>
               <div className={styles.formOptions}>
                 <label className={styles.rememberLabel}>
                   <input
                     type="checkbox"
                     name="rememberMe"
+                    tabIndex={!isRegister ? 0 : -1}
                     checked={formData.rememberMe}
                     onChange={handleChange}
                     style={{ accentColor: "#2E3A59" }}
                   />
                   <span>Ghi nhớ đăng nhập</span>
                 </label>
-                <a href="#forgot" className={styles.forgotLink}>
+                <a
+                  href="#forgot"
+                  tabIndex={!isRegister ? 0 : -1}
+                  className={styles.forgotLink}
+                >
                   Quên mật khẩu?
                 </a>
               </div>
-            )}
+            </Collapse>
 
             <button
               type="submit"
@@ -302,10 +347,7 @@ export default function Login() {
             >
               {isLoading ? (
                 <>
-                  <Loader2
-                    size={18}
-                    style={{ animation: "spin 1s linear infinite" }}
-                  />
+                  <Loader2 size={18} className={styles.spinner} />
                   <span>Đang xử lý...</span>
                 </>
               ) : (
@@ -340,7 +382,7 @@ export default function Login() {
                       handle: "@google_hng",
                     }),
                   );
-                  navigate("/");
+                  window.location.href = googleOAuthUrl;
                 }, 500);
               }}
             >
