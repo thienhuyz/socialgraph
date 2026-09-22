@@ -30,6 +30,14 @@ export const loginController = async (req: Request, res: Response) => {
   })
 }
 
+export const oauthGoogleController = async (req: Request, res: Response) => {
+  console.log(req.url)
+
+  return res.json({
+    message: USERS_MESSAGES.LOGIN_SUCCESS
+  })
+}
+
 export const registerController = async (req: Request<ParamsDictionary, any, RegisterReqBody>, res: Response) => {
   const result = await usersService.register(req.body)
 
