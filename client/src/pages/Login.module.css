@@ -1,5 +1,3 @@
-/* Login Page Styling for HNG */
-
 .loginWrapper {
   min-height: 100vh;
   height: 100vh;
@@ -12,6 +10,10 @@
 .heroSection {
   flex: 1.1;
   background: linear-gradient(135deg, #1a2234 0%, #2e3a59 50%, #3c4c74 100%);
+  background-position: center center;
+  background-repeat: no-repeat;
+  /* Keep the full banner illustration visible instead of cropping its edges. */
+  background-size: contain;
   color: #ffffff;
   padding: 48px 48px;
   display: flex;
@@ -21,23 +23,6 @@
   overflow: hidden;
   height: 100%;
   box-sizing: border-box;
-}
-
-/* Geometric web pattern overlay */
-.heroSection::before {
-  content: "";
-  position: absolute;
-  top: -100px;
-  right: -100px;
-  width: 450px;
-  height: 450px;
-  background: radial-gradient(
-    circle,
-    rgba(96, 165, 250, 0.15) 0%,
-    rgba(46, 58, 89, 0) 70%
-  );
-  border-radius: 50%;
-  pointer-events: none;
 }
 
 .heroTop {
@@ -62,9 +47,37 @@
 }
 
 .heroBody {
-  max-width: 520px;
+  max-width: 420px;
   z-index: 2;
-  margin: 20px 0;
+  margin: 40px 40px;
+  transform: none;
+}
+
+.heroIdentity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #ffffff;
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+}
+
+.heroMark {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(2, 12, 38, 0.28);
+}
+
+.heroKicker {
+  display: block;
+  margin: 48px 0 12px;
+  color: #a9c7ff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  line-height: 1.2;
 }
 
 .heroBadge {
@@ -83,18 +96,20 @@
 }
 
 .heroTitle {
-  font-size: 38px;
+  margin-top: 82px;
+  font-size: clamp(40px, 3.9vw, 54px);
   font-weight: 800;
-  line-height: 1.2;
-  letter-spacing: -1px;
+  line-height: 1.1;
+  letter-spacing: -1.8px;
   color: #ffffff;
-  margin-bottom: 14px;
+  margin-bottom: 0;
+  text-shadow: 0 3px 18px rgba(4, 13, 42, 0.35);
 }
 
-.heroSubtitle {
-  font-size: 15px;
-  color: #cbd5e1;
-  line-height: 1.6;
+.heroTitleLine {
+  display: inline-flex;
+  align-items: center;
+  margin: 8px 0;
 }
 
 .featureList {
@@ -128,10 +143,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
   padding-top: 20px;
   font-size: 13px;
-  color: #94a3b8;
+  color: #b9cae8;
   z-index: 2;
 }
 
@@ -161,7 +175,8 @@
 
 .formCard {
   width: 100%;
-  max-width: 420px;
+  /* Google Identity Services renders slightly under 400px at this size. */
+  max-width: 400px;
   display: flex;
   flex-direction: column;
   margin: 0;
@@ -453,8 +468,17 @@
 
 .socialGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 12px;
+  justify-items: stretch;
+}
+
+.socialGrid div {
+  width: 100%;
+}
+
+.socialGrid iframe {
+  width: 100% !important;
 }
 
 .socialBtn {
@@ -486,6 +510,7 @@
 .termsNote {
   margin-top: 12px;
   text-align: center;
+  white-space: nowrap;
   font-size: 12px;
   color: #94a3b8;
   line-height: 1.5;
