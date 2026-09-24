@@ -1,6 +1,8 @@
 .loginWrapper {
   min-height: 100vh;
+  min-height: 100dvh;
   height: 100vh;
+  height: 100dvh;
   display: flex;
   background-color: #f8fafc;
   overflow: hidden;
@@ -12,8 +14,7 @@
   background: linear-gradient(135deg, #1a2234 0%, #2e3a59 50%, #3c4c74 100%);
   background-position: center center;
   background-repeat: no-repeat;
-  /* Keep the full banner illustration visible instead of cropping its edges. */
-  background-size: contain;
+  background-size: cover;
   color: #ffffff;
   padding: 48px 48px;
   display: flex;
@@ -49,7 +50,7 @@
 .heroBody {
   max-width: 420px;
   z-index: 2;
-  margin: 40px 40px;
+  margin-top: 20px;
   transform: none;
 }
 
@@ -96,11 +97,11 @@
 }
 
 .heroTitle {
-  margin-top: 82px;
-  font-size: clamp(40px, 3.9vw, 54px);
+  margin-top: 50px;
+  font-size: clamp(34px, 3.5vw, 48px);
   font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: -1.8px;
+  line-height: 1.15;
+  letter-spacing: -1.5px;
   color: #ffffff;
   margin-bottom: 0;
   text-shadow: 0 3px 18px rgba(4, 13, 42, 0.35);
@@ -109,7 +110,7 @@
 .heroTitleLine {
   display: inline-flex;
   align-items: center;
-  margin: 8px 0;
+  margin: 4px 0;
 }
 
 .featureList {
@@ -160,66 +161,56 @@
   font-size: 16px;
 }
 
-/* Right Form Section - Cố định vị trí trên đầu để không bị nhảy khi chuyển tab */
+/* Right Form Section */
 .formSection {
   flex: 0.9;
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: clamp(20px, 3.5vh, 48px) clamp(24px, 3.5vw, 48px);
   background-color: #ffffff;
   height: 100%;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
   box-sizing: border-box;
 }
 
 .formCard {
   width: 100%;
-  /* Google Identity Services renders slightly under 400px at this size. */
-  max-width: 400px;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
-  margin: 0;
+  margin: auto 0;
   padding: 0;
 }
 
 .formHeader {
-  margin-bottom: 14px;
-  min-height: 58px;
-  animation: headerEnter 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-@keyframes headerEnter {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  margin-bottom: 16px;
 }
 
 .mobileBrand {
   display: none;
   align-items: center;
   gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .formTitle {
-  font-size: 28px;
+  font-size: clamp(22px, 2vw, 26px);
   font-weight: 800;
   color: #2e3a59;
   letter-spacing: -0.5px;
-  margin-bottom: 6px;
+  margin: 0 0 6px;
   line-height: 1.2;
 }
 
 .formSubtitle {
-  font-size: 14px;
+  font-size: 13.5px;
   color: #64748b;
-  min-height: 20px;
+  line-height: 1.5;
+  margin: 0;
 }
 
 /* Tab Switcher (Login / Register) */
@@ -229,86 +220,49 @@
   background-color: #f1f5f9;
   padding: 4px;
   border-radius: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
+  gap: 4px;
 }
 
 .tabBtn {
   position: relative;
   z-index: 1;
   flex: 1;
-  padding: 8px;
+  padding: 7px 12px;
   font-size: 14px;
   font-weight: 700;
   color: #64748b;
-  border-radius: 9px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 8px;
   text-align: center;
-  transition: color 220ms ease;
-}
-
-.tabSwitcher::before {
-  content: "";
-  position: absolute;
-  inset: 4px 50% 4px 4px;
-  border-radius: 9px;
-  background-color: #ffffff;
-  transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
-}
-
-.tabSwitcher:has(.tabBtn:last-child.activeTab)::before {
-  transform: translateX(100%);
+  transition: color 180ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .tabBtn.activeTab {
   color: #2e3a59;
 }
 
-/* Form: giữ nguyên khi đổi tab, chiều cao tự co giãn theo nội dung */
+.tabIndicator {
+  position: absolute;
+  inset: 0;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  z-index: -1;
+}
+
+.tabBtnText {
+  position: relative;
+  z-index: 2;
+}
+
 .authForm {
   display: block;
-}
-
-/* Thu gọn / mở rộng mượt cho các trường riêng của từng tab */
-.collapse {
-  display: grid;
-  grid-template-rows: 0fr;
-  opacity: 0;
-  visibility: hidden; /* ẩn khỏi tab order + screen reader khi đóng */
-  transition:
-    grid-template-rows 320ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 180ms ease,
-    visibility 0s linear 320ms;
-}
-
-.collapseOpen {
-  grid-template-rows: 1fr;
-  opacity: 1;
-  visibility: visible;
-  transition:
-    grid-template-rows 320ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 260ms ease 60ms,
-    visibility 0s;
-}
-
-.collapseInner {
-  min-height: 0;
-  overflow: hidden;
-  /* chừa chỗ để viền focus (box-shadow 3px) không bị cắt */
-  margin: -4px;
-  padding: 4px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .formHeader {
-    animation: none;
-  }
-
-  .collapse,
-  .collapseOpen,
-  .tabSwitcher::before,
-  .tabBtn {
-    transition: none;
-  }
 }
 
 /* Form Fields */
@@ -316,7 +270,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .formLabel {
@@ -330,10 +284,14 @@
   align-items: center;
   background-color: #f8fafc;
   border: 1.5px solid #e2e8f0;
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 0 14px;
-  transition: all 0.2s ease;
-  height: 40px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+  height: 42px;
+  box-sizing: border-box;
 }
 
 .inputWrapper:focus-within {
@@ -362,6 +320,9 @@
   display: flex;
   align-items: center;
   padding: 4px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
   transition: color 0.2s;
 }
 
@@ -373,7 +334,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 14px;
+  margin: 2px 0 14px;
   font-size: 13px;
 }
 
@@ -389,6 +350,7 @@
 .forgotLink {
   color: #2e3a59;
   font-weight: 600;
+  text-decoration: none;
   transition: text-decoration 0.2s;
 }
 
@@ -400,17 +362,25 @@
 .submitBtn {
   background: linear-gradient(135deg, #2e3a59 0%, #3f507b 100%);
   color: #ffffff;
-  padding: 10px;
-  border-radius: 10px;
-  font-size: 15px;
+  min-height: 42px;
+  height: 42px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-size: 14.5px;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   box-shadow: 0 4px 12px rgba(46, 58, 89, 0.25);
-  transition: all 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
   width: 100%;
+  border: none;
+  cursor: pointer;
+  box-sizing: border-box;
 }
 
 .submitBtn:hover {
@@ -428,7 +398,7 @@
   cursor: not-allowed;
 }
 
-/* Loading spinner (keyframes nằm trong module nên không phụ thuộc CSS global) */
+/* Loading spinner */
 .spinner {
   animation: spin 1s linear infinite;
 }
@@ -439,17 +409,11 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .spinner {
-    animation-duration: 2s;
-  }
-}
-
 /* Social Login Divider */
 .divider {
   display: flex;
   align-items: center;
-  margin: 12px 0;
+  margin: 14px 0 12px;
   color: #94a3b8;
   font-size: 12px;
 }
@@ -473,44 +437,58 @@
   justify-items: stretch;
 }
 
-.socialGrid div {
+.googleBtn {
   width: 100%;
-}
-
-.socialGrid iframe {
-  width: 100% !important;
-}
-
-.socialBtn {
+  min-height: 42px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 9px;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 10px;
-  font-size: 13px;
+  padding: 0 16px;
+  border: 1px solid #dadce0;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #3c4043;
+  font-family: inherit;
+  font-size: 14px;
   font-weight: 600;
-  color: #334155;
-  background-color: #ffffff;
-  transition: all 0.2s ease;
+  line-height: 20px;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 0.15s ease;
 }
 
-.socialBtn:hover {
-  background-color: #f8fafc;
-  border-color: #cbd5e1;
-}
-
-.socialIcon {
+.googleIcon {
   width: 18px;
   height: 18px;
+  flex: 0 0 18px;
+  margin-right: 12px;
+}
+
+.googleBtn:hover {
+  background-color: #f8faff;
+  border-color: #c6c9ce;
+  box-shadow: 0 2px 6px rgba(60, 64, 67, 0.15);
+}
+
+.googleBtn:active {
+  background-color: #f1f3f4;
+  box-shadow: none;
+}
+
+.googleBtn:focus-visible {
+  outline: 3px solid rgba(66, 133, 244, 0.3);
+  outline-offset: 2px;
 }
 
 /* Footer note */
 .termsNote {
-  margin-top: 12px;
+  margin: 12px 0 0;
   text-align: center;
-  white-space: nowrap;
   font-size: 12px;
   color: #94a3b8;
   line-height: 1.5;
@@ -519,6 +497,11 @@
 .termsLink {
   color: #2e3a59;
   font-weight: 600;
+  text-decoration: none;
+}
+
+.termsLink:hover {
+  text-decoration: underline;
 }
 
 /* Responsive */
@@ -526,6 +509,7 @@
   .loginWrapper {
     height: auto;
     min-height: 100vh;
+    min-height: 100dvh;
     overflow-y: auto;
   }
 
@@ -537,12 +521,40 @@
     flex: 1;
     height: auto;
     min-height: 100vh;
+    min-height: 100dvh;
     padding: 32px 20px;
-    /* flex-start để khối không bị nhích lên xuống khi form giãn ra */
-    align-items: flex-start;
+    align-items: center;
+    justify-content: center;
   }
 
   .mobileBrand {
     display: flex;
+  }
+
+  .formCard {
+    margin: auto 0;
+  }
+}
+
+@media (max-height: 720px) and (min-width: 961px) {
+  .formSection {
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .formSection {
+    padding: 24px 16px;
+  }
+
+  .formHeader {
+    margin-bottom: 14px;
+  }
+
+  .termsNote {
+    max-width: 340px;
+    margin-right: auto;
+    margin-left: auto;
   }
 }
