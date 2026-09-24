@@ -1,4 +1,4 @@
-import bannerImg from "../../assets/banner.png";
+import bannerImg from "../../assets/banner.svg";
 import logoImg from "../../assets/logo.png";
 import styles from "../../pages/Login.module.css";
 
@@ -10,7 +10,6 @@ export function LoginHero() {
         backgroundImage: `url(${bannerImg})`,
       }}
     >
-      {/* Minimal brand statement, similar to the social-platform landing style. */}
       <div className={styles.heroBody}>
         <div className={styles.heroIdentity}>
           <img src={logoImg} alt="HUNIA" className={styles.heroMark} />
