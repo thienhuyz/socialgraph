@@ -8,9 +8,11 @@ import { GoogleAuthButton } from "../components/auth/GoogleAuthButton";
 import { LoginHero } from "../components/auth/LoginHero";
 import styles from "./Login.module.css";
 
-const googleAuthUrl = () => {
+const googleOAuthUrl = () => {
   const { VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_REDIRECT_URI } = import.meta.env;
   const url = "https://accounts.google.com/o/oauth2/v2/auth";
+  const state = crypto.randomUUID();
+  sessionStorage.setItem("oauth_state", state);
   const params = new URLSearchParams({
     client_id: VITE_GOOGLE_CLIENT_ID,
     redirect_uri: VITE_GOOGLE_REDIRECT_URI,
@@ -20,11 +22,10 @@ const googleAuthUrl = () => {
       "https://www.googleapis.com/auth/userinfo.email",
     ].join(" "),
     prompt: "consent",
+    state,
   });
   return `${url}?${params.toString()}`;
 };
-
-const googleOAuthUrl = googleAuthUrl();
 
 export default function Login() {
   const [isRegister, setIsRegister] = useState(false);
@@ -252,7 +253,7 @@ export default function Login() {
             >
               <GoogleAuthButton
                 onClick={() => {
-                  window.location.href = googleOAuthUrl;
+                  window.location.href = googleOAuthUrl();
                 }}
               />
 
