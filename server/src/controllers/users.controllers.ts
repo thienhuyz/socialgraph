@@ -31,11 +31,10 @@ export const loginController = async (req: Request, res: Response) => {
 }
 
 export const oauthGoogleController = async (req: Request, res: Response) => {
-  console.log(req.url)
-
-  return res.json({
-    message: USERS_MESSAGES.LOGIN_SUCCESS
-  })
+  const { code } = req.query
+  const result = await usersService.oauthGoogle(code as string)
+  const urlRedirect = `${process.env.CLIENT_REDIRECT_CALLBACK}?access_token=${result.access_token}&refresh_token=${result.refresh_token}&new_user=${result.newUser}`
+  return res.redirect(urlRedirect)
 }
 
 export const registerController = async (req: Request<ParamsDictionary, any, RegisterReqBody>, res: Response) => {

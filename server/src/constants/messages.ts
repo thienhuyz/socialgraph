@@ -63,5 +63,6 @@ export const USERS_MESSAGES = {
   UNFOLLOW_SUCCESS: 'Unfollow success',
   OLD_PASSWORD_NOT_MATCH: 'Old password not match',
   CHANGE_PASSWORD_SUCCESS: 'Change password success',
-  NEW_PASSWORD_MUST_BE_DIFFERENT: 'The new password must be different from the old password'
+  NEW_PASSWORD_MUST_BE_DIFFERENT: 'The new password must be different from the old password',
+  GOOGLE_EMAIL_NOT_VERIFIED: 'Google email not verified'
 } as const
