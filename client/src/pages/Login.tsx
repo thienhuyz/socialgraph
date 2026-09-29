@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { ArrowRight, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import type { CredentialResponse } from "@react-oauth/google";
 import logoImg from "../assets/logo.png";
 import { AuthModeTabs } from "../components/auth/AuthModeTabs";
 import { Collapse } from "../components/auth/Collapse";
@@ -8,28 +10,47 @@ import { GoogleAuthButton } from "../components/auth/GoogleAuthButton";
 import { LoginHero } from "../components/auth/LoginHero";
 import styles from "./Login.module.css";
 
-const googleOAuthUrl = () => {
-  const { VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_REDIRECT_URI } = import.meta.env;
-  const url = "https://accounts.google.com/o/oauth2/v2/auth";
-  const state = crypto.randomUUID();
-  sessionStorage.setItem("oauth_state", state);
-  const params = new URLSearchParams({
-    client_id: VITE_GOOGLE_CLIENT_ID,
-    redirect_uri: VITE_GOOGLE_REDIRECT_URI,
-    response_type: "code",
-    scope: [
-      "https://www.googleapis.com/auth/userinfo.profile",
-      "https://www.googleapis.com/auth/userinfo.email",
-    ].join(" "),
-    prompt: "consent",
-    state,
-  });
-  return `${url}?${params.toString()}`;
-};
-
 export default function Login() {
+  const navigate = useNavigate();
   const [isRegister, setIsRegister] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    const id_token = credentialResponse.credential;
+    if (!id_token) {
+      setApiError("Google không trả về ID token.");
+      return;
+    }
+
+    try {
+      setApiError(null);
+      const response = await fetch("http://localhost:5000/users/oauth/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id_token }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Đăng nhập Google thất bại.");
+
+      const { access_token, refresh_token, newUser } = data.result;
+      localStorage.setItem("access_token", access_token);
+      localStorage.setItem("refresh_token", refresh_token);
+      if (newUser !== undefined) localStorage.setItem("new_user", String(newUser));
+      navigate("/", { replace: true });
+    } catch (error: unknown) {
+      setApiError(error instanceof Error ? error.message : "Không thể kết nối máy chủ.");
+    }
+  };
+
+  const handleGoogleError = () => setApiError("Đăng nhập Google thất bại hoặc đã bị hủy.");
+
+  useEffect(() => {
+    const existingToken = localStorage.getItem("access_token");
+    if (existingToken) {
+      navigate("/", { replace: true });
+    }
+  }, [navigate]);
 
   return (
     <LayoutGroup>
@@ -83,6 +104,23 @@ export default function Login() {
                 </motion.div>
               </AnimatePresence>
             </div>
+
+            {apiError && (
+              <div
+                style={{
+                  backgroundColor: "#fee2e2",
+                  border: "1px solid #f87171",
+                  color: "#b91c1c",
+                  padding: "10px 14px",
+                  borderRadius: "8px",
+                  marginBottom: "16px",
+                  fontSize: "14px",
+                  textAlign: "center",
+                }}
+              >
+                {apiError}
+              </div>
+            )}
 
             {/* Chuyển giữa Đăng nhập / Đăng ký */}
             <AuthModeTabs
@@ -252,9 +290,8 @@ export default function Login() {
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             >
               <GoogleAuthButton
-                onClick={() => {
-                  window.location.href = googleOAuthUrl();
-                }}
+                onSuccess={handleGoogleSuccess}
+                onError={handleGoogleError}
               />
 
               <p className={styles.termsNote}>
