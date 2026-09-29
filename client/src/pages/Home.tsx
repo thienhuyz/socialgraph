@@ -4,7 +4,9 @@ export default function Home() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("hng_user");
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("new_user");
     navigate("/login");
   };
 

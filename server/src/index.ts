@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import express from 'express'
+import cors from 'cors'
 import databaseService from '~/services/database.services'
 import usersRouter from '~/routes/users.routes'
 import { defaultErrorHandler } from '~/middlewares/error.middlewares'
@@ -7,6 +8,7 @@ import { defaultErrorHandler } from '~/middlewares/error.middlewares'
 const app = express()
 const PORT = Number(process.env.PORT) || 3000
 
+app.use(cors())
 app.use(express.json())
 app.use('/users', usersRouter)
 app.use((req, res) => {
