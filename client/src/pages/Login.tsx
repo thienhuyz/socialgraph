@@ -16,7 +16,9 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
-  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+  const handleGoogleSuccess = async (
+    credentialResponse: CredentialResponse,
+  ) => {
     const id_token = credentialResponse.credential;
     if (!id_token) {
       setApiError("Google không trả về ID token.");
@@ -31,19 +33,24 @@ export default function Login() {
         body: JSON.stringify({ id_token }),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Đăng nhập Google thất bại.");
+      if (!response.ok)
+        throw new Error(data.message || "Đăng nhập Google thất bại.");
 
       const { access_token, refresh_token, newUser } = data.result;
       localStorage.setItem("access_token", access_token);
       localStorage.setItem("refresh_token", refresh_token);
-      if (newUser !== undefined) localStorage.setItem("new_user", String(newUser));
+      if (newUser !== undefined)
+        localStorage.setItem("new_user", String(newUser));
       navigate("/", { replace: true });
     } catch (error: unknown) {
-      setApiError(error instanceof Error ? error.message : "Không thể kết nối máy chủ.");
+      setApiError(
+        error instanceof Error ? error.message : "Không thể kết nối máy chủ.",
+      );
     }
   };
 
-  const handleGoogleError = () => setApiError("Đăng nhập Google thất bại hoặc đã bị hủy.");
+  const handleGoogleError = () =>
+    setApiError("Đăng nhập Google thất bại hoặc đã bị hủy.");
 
   useEffect(() => {
     const existingToken = localStorage.getItem("access_token");
