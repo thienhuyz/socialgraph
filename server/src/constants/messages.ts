@@ -64,5 +64,8 @@ export const USERS_MESSAGES = {
   OLD_PASSWORD_NOT_MATCH: 'Old password not match',
   CHANGE_PASSWORD_SUCCESS: 'Change password success',
   NEW_PASSWORD_MUST_BE_DIFFERENT: 'The new password must be different from the old password',
+  GOOGLE_CREDENTIALS_NOT_PROVIDED: 'Google credentials not provided',
+  GOOGLE_ID_TOKEN_INVALID: 'Invalid Google ID token',
+  GOOGLE_EMAIL_UNAVAILABLE: 'Google account email is unavailable',
   GOOGLE_EMAIL_NOT_VERIFIED: 'Google email not verified'
 } as const

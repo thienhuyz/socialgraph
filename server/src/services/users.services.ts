@@ -118,7 +118,10 @@ class UsersService {
 
   async oauthGoogle(id_token: string) {
     if (!id_token) {
-      throw new ErrorWithStatus({ message: 'Google credentials not provided', status: HTTP_STATUS.BAD_REQUEST })
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.GOOGLE_CREDENTIALS_NOT_PROVIDED,
+        status: HTTP_STATUS.BAD_REQUEST
+      })
     }
 
     let payload
@@ -129,11 +132,17 @@ class UsersService {
       })
       payload = ticket.getPayload()
     } catch {
-      throw new ErrorWithStatus({ message: 'Invalid Google ID token', status: HTTP_STATUS.UNAUTHORIZED })
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.GOOGLE_ID_TOKEN_INVALID,
+        status: HTTP_STATUS.UNAUTHORIZED
+      })
     }
 
     if (!payload?.email) {
-      throw new ErrorWithStatus({ message: 'Google account email is unavailable', status: HTTP_STATUS.UNAUTHORIZED })
+      throw new ErrorWithStatus({
+        message: USERS_MESSAGES.GOOGLE_EMAIL_UNAVAILABLE,
+        status: HTTP_STATUS.UNAUTHORIZED
+      })
     }
     const userInfo = {
       email: payload.email,
@@ -171,8 +180,7 @@ class UsersService {
       await databaseService.refreshTokens.insertOne(new RefreshToken({ user_id: user._id, token: refresh_token }))
       return {
         access_token,
-        refresh_token,
-        newUser: false
+        refresh_token
       }
     } else {
       const user_id = new ObjectId()
@@ -199,7 +207,7 @@ class UsersService {
       })
       await databaseService.refreshTokens.insertOne(new RefreshToken({ user_id, token: refresh_token }))
 
-      return { access_token, refresh_token, newUser: true }
+      return { access_token, refresh_token }
     }
   }
 
