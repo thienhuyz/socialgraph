@@ -36,11 +36,9 @@ export default function Login() {
       if (!response.ok)
         throw new Error(data.message || "Đăng nhập Google thất bại.");
 
-      const { access_token, refresh_token, newUser } = data.result;
+      const { access_token, refresh_token } = data.result;
       localStorage.setItem("access_token", access_token);
       localStorage.setItem("refresh_token", refresh_token);
-      if (newUser !== undefined)
-        localStorage.setItem("new_user", String(newUser));
       navigate("/", { replace: true });
     } catch (error: unknown) {
       setApiError(
