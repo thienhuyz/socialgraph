@@ -67,5 +67,7 @@ export const USERS_MESSAGES = {
   GOOGLE_CREDENTIALS_NOT_PROVIDED: 'Google credentials not provided',
   GOOGLE_ID_TOKEN_INVALID: 'Invalid Google ID token',
   GOOGLE_EMAIL_UNAVAILABLE: 'Google account email is unavailable',
-  GOOGLE_EMAIL_NOT_VERIFIED: 'Google email not verified'
+  GOOGLE_EMAIL_NOT_VERIFIED: 'Google email not verified',
+  FILE_IS_REQUIRED: 'Image is required and must be a valid image file',
+  UPLOAD_IMAGE_SUCCESSFULLY: 'Upload image successfully'
 } as const
