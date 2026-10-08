@@ -1,7 +1,7 @@
-import { NextFunction, Request, Response } from 'express'
+import { Request, Response } from 'express'
 import mediaService from '~/services/medias.services'
 
-export const uploadSingleImageController = async (req: Request, res: Response, next: NextFunction) => {
-  const result = await mediaService.hanleUploadSingleImage(req, res, next)
+export const uploadSingleImageController = async (req: Request, res: Response) => {
+  const result = await mediaService.uploadSingleImage(req)
   res.json(result)
 }
