@@ -1,4 +1,4 @@
-import 'dotenv/config'
+import { PORT, BASE_URL } from '~/utils/config'
 import express from 'express'
 import cors from 'cors'
 import databaseService from '~/services/database.services'
@@ -8,7 +8,6 @@ import mediaRouter from './routes/media.routes'
 import { initFloder } from './utils/file'
 
 const app = express()
-const PORT = Number(process.env.PORT) || 3000
 initFloder()
 app.use(cors())
 app.use(express.json())
@@ -23,7 +22,7 @@ const bootstrap = async () => {
   await databaseService.connect()
 
   app.listen(PORT, () => {
-    console.log(`Server is running at http://localhost:${PORT}`)
+    console.log(`Server is running at ${BASE_URL}`)
   })
 }
 
