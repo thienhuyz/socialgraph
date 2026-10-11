@@ -2,7 +2,7 @@ import { Request } from 'express'
 import { formidable } from 'formidable'
 import fs from 'fs'
 import { UPLOAD_TEMP_DIR } from '~/constants/dir'
-import { USERS_MESSAGES } from '~/constants/messages'
+import { MEDIAS_MESSAGES } from '~/constants/messages'
 
 export const initFloder = () => {
   if (!fs.existsSync(UPLOAD_TEMP_DIR)) {
@@ -24,7 +24,7 @@ export const handleFileUpload = async (req: Request) => {
   const [, files] = await form.parse(req)
 
   if (!files.image) {
-    throw new Error(USERS_MESSAGES.FILE_IS_REQUIRED)
+    throw new Error(MEDIAS_MESSAGES.FILE_IS_REQUIRED)
   }
 
   return files.image[0]
