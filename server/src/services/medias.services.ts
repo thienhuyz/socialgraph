@@ -7,13 +7,17 @@ import path from 'path'
 import fs from 'fs'
 
 class MediaService {
-  async uploadSingleImage(req: Request) {
-    const file = await handleFileUpload(req)
-    const newName = getNameFileUpload(file.newFilename)
-    const filepath = path.resolve(UPLOAD_DIR, `${newName}.webp`)
-    await sharp(file.filepath).rotate().resize(256, 256, { fit: 'cover' }).webp({ quality: 80 }).toFile(filepath)
-    fs.unlinkSync(file.filepath)
-    return `${BASE_URL}/static/images/${newName}.webp`
+  async uploadImage(req: Request) {
+    const files = await handleFileUpload(req)
+    Promise.all(
+      files.map(async (file) => {
+        const newName = getNameFileUpload(file.newFilename)
+        const filepath = path.resolve(UPLOAD_DIR, `${newName}.webp`)
+        await sharp(file.filepath).rotate().resize(256, 256, { fit: 'cover' }).webp({ quality: 80 }).toFile(filepath)
+        fs.unlinkSync(file.filepath)
+        return `${BASE_URL}/static/images/${newName}.webp`
+      })
+    )
   }
 }
 

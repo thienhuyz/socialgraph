@@ -6,8 +6,8 @@ import { MEDIAS_MESSAGES } from '~/constants/messages'
 export const serveImageController = (req: Request, res: Response) => {
   const { filename } = req.params as { filename: string }
 
-  res.sendFile(path.resolve(UPLOAD_DIR, filename), (err) => {
-    if (err) {
+  res.sendFile(filename, { root: UPLOAD_DIR }, (err) => {
+    if (err && !res.headersSent) {
       res.status(404).json({ message: MEDIAS_MESSAGES.IMAGE_NOT_FOUND })
     }
   })
