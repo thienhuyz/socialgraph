@@ -13,8 +13,8 @@ export const initFloder = () => {
 export const handleFileUpload = async (req: Request) => {
   const form = formidable({
     uploadDir: UPLOAD_TEMP_DIR,
-    maxFiles: 1,
-    maxFileSize: 2 * 1024 * 1024,
+    maxFiles: 10,
+    maxFileSize: 10 * 1024 * 1024,
     keepExtensions: true,
     filter: function ({ name, mimetype }) {
       return name === 'image' && Boolean(mimetype?.includes('image/'))
@@ -27,7 +27,7 @@ export const handleFileUpload = async (req: Request) => {
     throw new Error(MEDIAS_MESSAGES.FILE_IS_REQUIRED)
   }
 
-  return files.image[0]
+  return files.image
 }
 
 export const getNameFileUpload = (name: string) => {
