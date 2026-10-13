@@ -1,5 +1,4 @@
 import { Request, Response } from 'express'
-import path from 'path'
 import { UPLOAD_DIR } from '~/constants/dir'
 import { MEDIAS_MESSAGES } from '~/constants/messages'
 
