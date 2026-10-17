@@ -145,6 +145,7 @@ class UsersService {
       })
     }
     const userInfo = {
+      google_id: payload.sub,
       email: payload.email,
       email_verified: Boolean(payload.email_verified),
       name: payload.name || '',
@@ -157,16 +158,27 @@ class UsersService {
         status: HTTP_STATUS.BAD_REQUEST
       })
     }
-    const user = await databaseService.users.findOne({ email: userInfo.email })
+    const user = await databaseService.users.findOne({
+      $or: [...(userInfo.google_id ? [{ google_id: userInfo.google_id }] : []), { email: userInfo.email }]
+    })
     if (user) {
+      const updateFields: Record<string, any> = {}
       if (user.verify === UserVerifyStatus.Unverified) {
+        updateFields.verify = UserVerifyStatus.Verified
+        updateFields.email_verify_token = ''
+      }
+      if (!user.google_id && userInfo.google_id) {
+        updateFields.google_id = userInfo.google_id
+      }
+      if (user.email !== userInfo.email) {
+        updateFields.email = userInfo.email
+      }
+
+      if (Object.keys(updateFields).length > 0) {
         await databaseService.users.updateOne(
           { _id: user._id },
           {
-            $set: {
-              verify: UserVerifyStatus.Verified,
-              email_verify_token: ''
-            },
+            $set: updateFields,
             $currentDate: {
               updated_at: true
             }
@@ -197,7 +209,8 @@ class UsersService {
           verify: UserVerifyStatus.Verified,
           email_verify_token: '',
           username: `user${user_id.toString()}`,
-          avatar: userInfo.picture || ''
+          avatar: userInfo.picture || '',
+          google_id: userInfo.google_id || ''
         })
       )
 

@@ -18,6 +18,7 @@ interface UserType {
   username?: string
   avatar?: string
   cover_photo?: string
+  google_id?: string
 }
 
 export default class User {
@@ -37,6 +38,7 @@ export default class User {
   username: string
   avatar: string
   cover_photo: string
+  google_id?: string
 
   constructor(user: UserType) {
     const date = new Date()
@@ -56,5 +58,6 @@ export default class User {
     this.username = user.username || ''
     this.avatar = user.avatar || ''
     this.cover_photo = user.cover_photo || ''
+    this.google_id = user.google_id || ''
   }
 }
