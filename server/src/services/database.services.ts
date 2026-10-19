@@ -33,7 +33,7 @@ class DatabaseService {
   }
 
   get followers(): Collection<Follower> {
-    return this.db.collection(process.env.DB_FOLLOWERS_TOKENS_COLLECTION as string)
+    return this.db.collection(process.env.DB_FOLLOWERS_COLLECTION as string)
   }
 }
 
