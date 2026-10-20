@@ -1,63 +1,85 @@
 import { ObjectId } from 'mongodb'
 import { UserVerifyStatus } from '~/constants/enums'
-interface UserType {
-  _id?: ObjectId
-  name: string
-  email: string
-  date_of_birth: Date
-  password: string
-  created_at?: Date
-  updated_at?: Date
-  email_verify_token?: string
-  forgot_password_token?: string
-  verify?: UserVerifyStatus
 
+export interface UserType {
+  _id?: ObjectId
+  // 1. Tài khoản & Đăng nhập
+  email: string
+  password: string
+  username?: string
+  google_id?: string
+
+  // 2. Thông tin cá nhân
+  name: string
+  date_of_birth: Date
   bio?: string
   location?: string
   website?: string
-  username?: string
   avatar?: string
   cover_photo?: string
-  google_id?: string
+
+  // 3. Trạng thái xác thực & Token
+  verify?: UserVerifyStatus
+  email_verify_token?: string
+  forgot_password_token?: string
+
+  // 4. Thời gian hệ thống
+  created_at?: Date
+  updated_at?: Date
 }
 
 export default class User {
   _id?: ObjectId
-  name: string
+  // 1. Tài khoản & Đăng nhập
   email: string
-  date_of_birth: Date
   password: string
-  created_at: Date
-  updated_at: Date
-  email_verify_token: string
-  forgot_password_token: string
-  verify: UserVerifyStatus
+  username: string
+  google_id: string
+
+  // 2. Thông tin cá nhân
+  name: string
+  date_of_birth: Date
   bio: string
   location: string
   website: string
-  username: string
   avatar: string
   cover_photo: string
-  google_id?: string
+
+  // 3. Trạng thái xác thực & Token
+  verify: UserVerifyStatus
+  email_verify_token: string
+  forgot_password_token: string
+
+  // 4. Thời gian hệ thống
+  created_at: Date
+  updated_at: Date
 
   constructor(user: UserType) {
     const date = new Date()
     this._id = user._id
-    this.name = user.name || ''
+
+    // 1. Tài khoản & Đăng nhập
     this.email = user.email
-    this.date_of_birth = user.date_of_birth || date
     this.password = user.password
-    this.created_at = user.created_at || date
-    this.updated_at = user.updated_at || date
-    this.email_verify_token = user.email_verify_token || ''
-    this.forgot_password_token = user.forgot_password_token || ''
-    this.verify = user.verify || UserVerifyStatus.Unverified
+    this.username = user.username || ''
+    this.google_id = user.google_id || ''
+
+    // 2. Thông tin cá nhân
+    this.name = user.name || ''
+    this.date_of_birth = user.date_of_birth || date
     this.bio = user.bio || ''
     this.location = user.location || ''
     this.website = user.website || ''
-    this.username = user.username || ''
     this.avatar = user.avatar || ''
     this.cover_photo = user.cover_photo || ''
-    this.google_id = user.google_id || ''
+
+    // 3. Trạng thái xác thực & Token
+    this.verify = user.verify || UserVerifyStatus.Unverified
+    this.email_verify_token = user.email_verify_token || ''
+    this.forgot_password_token = user.forgot_password_token || ''
+
+    // 4. Thời gian hệ thống
+    this.created_at = user.created_at || date
+    this.updated_at = user.updated_at || date
   }
 }
