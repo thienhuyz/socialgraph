@@ -5,7 +5,7 @@ import sharp from 'sharp'
 import { UPLOAD_DIR } from '~/constants/dir'
 import path from 'path'
 import fs from 'fs'
-import { Media } from '~/models/Other'
+import { Media } from '~/models/types/Media.types'
 import { MediaType } from '~/constants/enums'
 
 class MediaService {

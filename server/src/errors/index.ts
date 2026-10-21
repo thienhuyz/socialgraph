@@ -8,6 +8,7 @@ type ErrorType = Record<
     [key: string]: any
   }
 >
+
 export class ErrorWithStatus {
   message: string
   status: number
@@ -25,3 +26,4 @@ export class EntityError extends ErrorWithStatus {
     this.errors = errors
   }
 }
+
