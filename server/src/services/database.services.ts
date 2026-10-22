@@ -5,7 +5,7 @@ import RefreshToken from '~/models/schemas/RefreshToken.schema'
 import Follower from '~/models/schemas/Follower.schema'
 
 dns.setServers(['1.1.1.1', '8.8.8.8'])
-const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@socialgraph.asitkbu.mongodb.net/?appName=socialgraph`
+const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@hunia-dev.fjef4rr.mongodb.net/`
 
 class DatabaseService {
   private client: MongoClient

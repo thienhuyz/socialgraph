@@ -26,4 +26,3 @@ export class EntityError extends ErrorWithStatus {
     this.errors = errors
   }
 }
-
