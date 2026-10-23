@@ -1,13 +1,17 @@
 import { Request } from 'express'
 import { formidable } from 'formidable'
 import fs from 'fs'
-import { UPLOAD_TEMP_DIR } from '~/constants/dir'
+import { UPLOAD_DIR, UPLOAD_TEMP_DIR } from '~/constants/dir'
 import { MEDIAS_MESSAGES } from '~/constants/messages'
+import HTTP_STATUS from '~/constants/httpStatus'
+import { ErrorWithStatus } from '~/errors'
 
 export const initFloder = () => {
-  if (!fs.existsSync(UPLOAD_TEMP_DIR)) {
-    fs.mkdirSync(UPLOAD_TEMP_DIR, { recursive: true })
-  }
+  ;[UPLOAD_TEMP_DIR, UPLOAD_DIR].forEach((dir) => {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true })
+    }
+  })
 }
 
 export const handleFileUpload = async (req: Request) => {
@@ -25,7 +29,10 @@ export const handleFileUpload = async (req: Request) => {
   const [, files] = await form.parse(req)
 
   if (!files.image) {
-    throw new Error(MEDIAS_MESSAGES.FILE_IS_REQUIRED)
+    throw new ErrorWithStatus({
+      message: MEDIAS_MESSAGES.FILE_IS_REQUIRED,
+      status: HTTP_STATUS.BAD_REQUEST
+    })
   }
 
   return files.image

@@ -17,7 +17,7 @@ class MediaService {
         const filepath = path.resolve(UPLOAD_DIR, `${newName}.webp`)
         await sharp(file.filepath).rotate().resize(256, 256, { fit: 'cover' }).webp({ quality: 80 }).toFile(filepath)
         fs.unlinkSync(file.filepath)
-        return { url: `${BASE_URL}/medias/${newName}.webp`, type: MediaType.Image }
+        return { url: `${BASE_URL}/static/images/${newName}.webp`, type: MediaType.Image }
       })
     )
     return result
