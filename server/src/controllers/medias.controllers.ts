@@ -17,3 +17,11 @@ export const uploadImageController = async (req: Request, res: Response) => {
     result
   })
 }
+
+export const uploadVideoController = async (req: Request, res: Response) => {
+  const result = await mediaService.uploadVideo(req)
+  res.json({
+    message: MEDIAS_MESSAGES.UPLOAD_VIDEO_SUCCESSFULLY,
+    result
+  })
+}

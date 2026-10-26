@@ -102,5 +102,6 @@ export const USERS_MESSAGES = {
 export const MEDIAS_MESSAGES = {
   FILE_IS_REQUIRED: 'Image is required and must be a valid image file',
   UPLOAD_IMAGE_SUCCESSFULLY: 'Upload image successfully',
-  IMAGE_NOT_FOUND: 'Image not found'
+  IMAGE_NOT_FOUND: 'Image not found',
+  UPLOAD_VIDEO_SUCCESSFULLY: 'Upload video successfully'
 } as const
