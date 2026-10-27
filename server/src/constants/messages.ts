@@ -103,5 +103,7 @@ export const MEDIAS_MESSAGES = {
   FILE_IS_REQUIRED: 'Image is required and must be a valid image file',
   UPLOAD_IMAGE_SUCCESSFULLY: 'Upload image successfully',
   IMAGE_NOT_FOUND: 'Image not found',
-  UPLOAD_VIDEO_SUCCESSFULLY: 'Upload video successfully'
+  UPLOAD_VIDEO_SUCCESSFULLY: 'Upload video successfully',
+  VIDEO_NOT_FOUND: 'Video not found',
+  VIDEO_IS_REQUIRED: 'Video is required and must be a valid video file'
 } as const

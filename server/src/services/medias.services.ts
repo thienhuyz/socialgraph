@@ -1,6 +1,6 @@
 import { Request } from 'express'
 import { BASE_URL } from '~/utils/config'
-import { handleUploadImage, handleUploadSingleImage, getNameFileUpload } from '~/utils/file'
+import { handleUploadImage, handleUploadSingleImage, getNameFileUpload, handleUploadVideo } from '~/utils/file'
 import sharp from 'sharp'
 import { UPLOAD_IMAGE_DIR } from '~/constants/dir'
 import path from 'path'
@@ -37,19 +37,11 @@ class MediaService {
   }
 
   async uploadVideo(req: Request) {
-    const files = await handleUploadImage(req)
-    const result: Media[] = await Promise.all(
-      files.map(async (file) => {
-        const newName = getNameFileUpload(file.newFilename)
-        const filepath = path.resolve(UPLOAD_IMAGE_DIR, `${newName}.webp`)
-
-        await sharp(file.filepath).rotate().webp({ quality: 80 }).toFile(filepath)
-        fs.unlinkSync(file.filepath)
-
-        return { url: `${BASE_URL}/static/images/${newName}.webp`, type: MediaType.Image }
-      })
-    )
-    return result
+    const file = await handleUploadVideo(req)
+    return {
+      url: `${BASE_URL}/static/videos/${file.newFilename}`,
+      type: MediaType.Video
+    }
   }
 }
 
