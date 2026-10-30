@@ -5,6 +5,7 @@ import { UPLOAD_IMAGE_DIR, UPLOAD_IMAGE_TEMP_DIR, UPLOAD_VIDEO_DIR, UPLOAD_VIDEO
 import { MEDIAS_MESSAGES } from '~/constants/messages'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { ErrorWithStatus } from '~/errors'
+import path from 'path'
 
 export const initFloder = () => {
   ;[UPLOAD_IMAGE_TEMP_DIR, UPLOAD_IMAGE_DIR, UPLOAD_VIDEO_TEMP_DIR, UPLOAD_VIDEO_DIR].forEach((dir) => {
@@ -19,7 +20,6 @@ export const handleUploadSingleImage = async (req: Request) => {
     uploadDir: UPLOAD_IMAGE_TEMP_DIR,
     maxFiles: 1,
     maxFileSize: 5 * 1024 * 1024,
-    keepExtensions: true,
     filter: function ({ name, mimetype }) {
       return name === 'image' && Boolean(mimetype?.includes('image/'))
     }
@@ -43,7 +43,6 @@ export const handleUploadImage = async (req: Request) => {
     maxFiles: 10,
     maxFileSize: 5 * 1024 * 1024,
     maxTotalFileSize: 30 * 1024 * 1024,
-    keepExtensions: true,
     filter: function ({ name, mimetype }) {
       return name === 'image' && Boolean(mimetype?.includes('image/'))
     }
@@ -63,12 +62,11 @@ export const handleUploadImage = async (req: Request) => {
 
 export const handleUploadVideo = async (req: Request) => {
   const form = formidable({
-    uploadDir: UPLOAD_VIDEO_DIR,
+    uploadDir: UPLOAD_VIDEO_TEMP_DIR,
     maxFiles: 1,
     maxFileSize: 50 * 1024 * 1024,
-    keepExtensions: true,
     filter: function ({ name, mimetype }) {
-      const valid = name === 'video' && Boolean(mimetype?.includes('mp4') || mimetype?.includes('quicktime'))
+      const valid = name === 'video' && Boolean(mimetype?.includes('mp4'))
       if (!valid) {
         form.emit('error' as any, new Error('File type is not valid') as any)
       }
@@ -86,10 +84,4 @@ export const handleUploadVideo = async (req: Request) => {
   }
 
   return (files.video as File[])[0]
-}
-
-export const getNameFileUpload = (name: string) => {
-  const arrName = name.split('.')
-  arrName.pop()
-  return arrName.join('')
 }
