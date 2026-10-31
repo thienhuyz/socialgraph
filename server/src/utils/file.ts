@@ -75,6 +75,7 @@ export const handleUploadVideo = async (req: Request) => {
   })
 
   const [, files] = await form.parse(req)
+  console.log(files)
 
   if (!files.video || files.video.length === 0) {
     throw new ErrorWithStatus({
