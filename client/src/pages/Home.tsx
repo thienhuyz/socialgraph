@@ -378,6 +378,13 @@ export default function Home() {
         {/* ==================== CENTER FEED ==================== */}
         <main className={styles.mainFeed}>
           {/* Feed Header with Tabs & Filters */}
+          <video controls>
+            <source
+              src="http://localhost:5000/static/videos/y1dewtqvrfvcs7lkbnftscro5.mp4"
+              type="video/mp4"
+            />
+            Your browser does not support the video tag.
+          </video>
           <header className={styles.feedHeaderCard}>
             <div className={styles.feedHeaderTop}>
               <div className={styles.feedTitleWrap}>
