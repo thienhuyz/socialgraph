@@ -7,9 +7,6 @@ import path from 'path'
 import fs from 'fs'
 import { Media } from '~/models/types/Media.types'
 import { MediaType } from '~/constants/enums'
-import { ErrorWithStatus } from '~/errors'
-import { MEDIAS_MESSAGES } from '~/constants/messages'
-import HTTP_STATUS from '~/constants/httpStatus'
 
 class MediaService {
   async uploadSingleImage(req: Request) {
@@ -50,40 +47,6 @@ class MediaService {
       url: `${BASE_URL}/static/videos/${filename}`,
       type: MediaType.Video
     }
-  }
-
-  getVideoStreamInfo({ filename, range }: { filename: string; range: string }) {
-    const videoPath = path.resolve(UPLOAD_VIDEO_DIR, filename)
-
-    if (!fs.existsSync(videoPath)) {
-      throw new ErrorWithStatus({
-        message: MEDIAS_MESSAGES.VIDEO_NOT_FOUND,
-        status: HTTP_STATUS.NOT_FOUND
-      })
-    }
-
-    const videoSize = fs.statSync(videoPath).size
-    const chunkSize = 10 ** 6
-    const start = Number(range.replace(/\D/g, ''))
-    const end = Math.min(start + chunkSize, videoSize - 1)
-
-    const contentLength = end - start + 1
-    const contentType = filename.endsWith('.mp4')
-      ? 'video/mp4'
-      : filename.endsWith('.mov')
-        ? 'video/quicktime'
-        : 'video/*'
-
-    const headers = {
-      'Content-Range': `bytes ${start}-${end}/${videoSize}`,
-      'Accept-Ranges': 'bytes',
-      'Content-Length': contentLength,
-      'Content-Type': contentType
-    }
-
-    const videoStream = fs.createReadStream(videoPath, { start, end })
-
-    return { headers, videoStream }
   }
 }
 

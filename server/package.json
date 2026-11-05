@@ -39,7 +39,6 @@
   },
   "dependencies": {
     "@types/formidable": "^3.5.1",
-    "axios": "^1.20.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
