@@ -380,7 +380,7 @@ export default function Home() {
           {/* Feed Header with Tabs & Filters */}
           <video controls>
             <source
-              src="http://localhost:5000/static/videos/y1dewtqvrfvcs7lkbnftscro5.mp4"
+              src="http://localhost:5000/static/video-stream/ttymstxovpcjq09yvk5rof5uw.mp4"
               type="video/mp4"
             />
             Your browser does not support the video tag.

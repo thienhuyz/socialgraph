@@ -7,6 +7,7 @@ import path from 'path'
 import fs from 'fs'
 import { Media } from '~/models/types/Media.types'
 import { MediaType } from '~/constants/enums'
+import { encodeHLSWithMultipleVideoStreams } from '~/utils/video'
 
 class MediaService {
   async uploadSingleImage(req: Request) {
@@ -46,6 +47,29 @@ class MediaService {
     return {
       url: `${BASE_URL}/static/videos/${filename}`,
       type: MediaType.Video
+    }
+  }
+
+  async uploadVideoHLS(req: Request) {
+    const file = await handleUploadVideo(req)
+    const videoId = file.newFilename
+    const videoFolder = path.resolve(UPLOAD_VIDEO_DIR, videoId)
+
+    if (!fs.existsSync(videoFolder)) {
+      fs.mkdirSync(videoFolder, { recursive: true })
+    }
+
+    const tempFilePath = path.resolve(videoFolder, `${videoId}.mp4`)
+    fs.renameSync(file.filepath, tempFilePath)
+
+    await encodeHLSWithMultipleVideoStreams(tempFilePath)
+
+    // Xóa file mp4 gốc sau khi encode thành các file m3u8 và ts thành công
+    fs.unlinkSync(tempFilePath)
+
+    return {
+      url: `${BASE_URL}/static/video-hls/${videoId}/master.m3u8`,
+      type: MediaType.HLS
     }
   }
 }

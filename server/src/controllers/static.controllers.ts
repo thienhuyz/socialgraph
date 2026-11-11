@@ -49,3 +49,22 @@ export const serveVideoStreamController = (req: Request, res: Response) => {
   const videoStream = fs.createReadStream(videoPath, { start, end })
   videoStream.pipe(res)
 }
+
+// Phục vụ các file tĩnh HLS (.m3u8, .ts)
+export const serveM3u8Controller = (req: Request, res: Response) => {
+  const { id } = req.params as { id: string }
+  res.sendFile('master.m3u8', { root: path.resolve(UPLOAD_VIDEO_DIR, id) }, (err) => {
+    if (err && !res.headersSent) {
+      res.status(404).json({ message: MEDIAS_MESSAGES.VIDEO_NOT_FOUND })
+    }
+  })
+}
+
+export const serveSegmentController = (req: Request, res: Response) => {
+  const { id, v, segment } = req.params as { id: string; v: string; segment: string }
+  res.sendFile(segment, { root: path.resolve(UPLOAD_VIDEO_DIR, id, v) }, (err) => {
+    if (err && !res.headersSent) {
+      res.status(404).json({ message: MEDIAS_MESSAGES.VIDEO_NOT_FOUND })
+    }
+  })
+}
