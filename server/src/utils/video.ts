@@ -1,171 +1,124 @@
 import path from 'path'
+import { mkdir } from 'fs/promises'
 import { spawn } from 'child_process'
 
-const MAXIMUM_BITRATE_720P = 5 * 10 ** 6 // 5Mbps
-const MAXIMUM_BITRATE_1080P = 8 * 10 ** 6 // 8Mbps
-const MAXIMUM_BITRATE_1440P = 16 * 10 ** 6 // 16Mbps
+// Các mức chất lượng: chiều cao + bitrate video (bit/s). Muốn thêm/bớt mức thì sửa ở đây.
+const LADDER = [
+  { height: 360, bitrate: 800_000 },
+  { height: 480, bitrate: 1_400_000 },
+  { height: 720, bitrate: 2_800_000 },
+  { height: 1080, bitrate: 5_000_000 }
+]
 
-const runCommand = (command: string, args: string[]): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const process = spawn(command, args, { windowsHide: true })
-    let stdout = ''
-    let stderr = ''
-
-    process.stdout.on('data', (data) => {
-      stdout += data.toString()
-    })
-
-    process.stderr.on('data', (data) => {
-      stderr += data.toString()
-    })
-
-    process.on('close', (code) => {
-      if (code === 0) {
-        resolve(stdout)
-      } else {
-        reject(new Error(`Command ${command} failed with code ${code}:\n${stderr || stdout}`))
-      }
-    })
-
-    process.on('error', (err) => {
-      reject(err)
-    })
+// Chạy một lệnh (ffmpeg / ffprobe) và trả về chữ nó in ra
+const run = (cmd: string, args: string[]) =>
+  new Promise<string>((resolve, reject) => {
+    const p = spawn(cmd, args, { windowsHide: true })
+    let out = ''
+    let err = ''
+    p.stdout.on('data', (d) => (out += d))
+    p.stderr.on('data', (d) => (err += d))
+    p.on('error', reject)
+    p.on('close', (code) => (code === 0 ? resolve(out.trim()) : reject(new Error(err || `${cmd} lỗi, mã ${code}`))))
   })
-}
 
-export const checkVideoHasAudio = async (filePath: string) => {
-  try {
-    const stdout = await runCommand('ffprobe', [
-      '-v',
-      'error',
-      '-select_streams',
-      'a:0',
-      '-show_entries',
-      'stream=codec_type',
-      '-of',
-      'default=nw=1:nk=1',
-      filePath
-    ])
-    return stdout.trim() === 'audio'
-  } catch {
-    return false
-  }
-}
-
-export const getBitrate = async (filePath: string) => {
-  try {
-    const stdout = await runCommand('ffprobe', [
-      '-v',
-      'error',
-      '-select_streams',
-      'v:0',
-      '-show_entries',
-      'stream=bit_rate',
-      '-of',
-      'default=nw=1:nk=1',
-      filePath
-    ])
-    const bitrate = Number(stdout.trim())
-    if (bitrate && !isNaN(bitrate)) return bitrate
-
-    const formatStdout = await runCommand('ffprobe', [
-      '-v',
-      'error',
-      '-show_entries',
-      'format=bit_rate',
-      '-of',
-      'default=nw=1:nk=1',
-      filePath
-    ])
-    return Number(formatStdout.trim()) || 2 * 10 ** 6
-  } catch {
-    return 2 * 10 ** 6
-  }
-}
-
-export const getResolution = async (filePath: string) => {
-  const stdout = await runCommand('ffprobe', [
+// Đo video: chiều cao, bitrate (0 nếu không đọc được), có audio hay không
+const probe = async (file: string) => {
+  const info = await run('ffprobe', [
     '-v',
     'error',
     '-select_streams',
     'v:0',
     '-show_entries',
-    'stream=width,height',
+    'stream=height,bit_rate',
     '-of',
-    'csv=s=x:p=0',
-    filePath
+    'json',
+    file
   ])
-  return stdout.trim()
+  const stream = JSON.parse(info).streams?.[0]
+  if (!stream) throw new Error('Không tìm thấy luồng video')
+
+  const audio = await run('ffprobe', [
+    '-v',
+    'error',
+    '-select_streams',
+    'a:0',
+    '-show_entries',
+    'stream=codec_type',
+    '-of',
+    'csv=p=0',
+    file
+  ])
+  return {
+    height: Number(stream.height),
+    bitrate: Number(stream.bit_rate) || 0,
+    hasAudio: audio === 'audio'
+  }
 }
 
-export const encodeHLSWithMultipleVideoStreams = async (inputPath: string) => {
-  const [bitrate, resolution, isHasAudio] = await Promise.all([
-    getBitrate(inputPath),
-    getResolution(inputPath),
-    checkVideoHasAudio(inputPath)
-  ])
+export const encodeHLSWithMultipleVideoStreams = async (inputPath: string, outDir = path.dirname(inputPath)) => {
+  const { height, bitrate, hasAudio } = await probe(inputPath)
 
-  const parent_folder = path.join(inputPath, '..')
-  // Chuẩn FFmpeg HLS đa stream: file danh sách từng phân giải phải có %v (ví dụ: v%v/prog_index.m3u8)
-  const outputSegmentPath = path.join(parent_folder, 'v%v', 'fileSequence%d.ts').replace(/\\/g, '/')
-  const variantPlaylistPath = path.join(parent_folder, 'v%v', 'prog_index.m3u8').replace(/\\/g, '/')
-
-  const args: string[] = [
-    '-y',
-    '-i',
-    inputPath,
-    '-filter_complex',
-    '[0:v]split=3[v1][v2][v3];[v1]copy[v1out];[v2]scale=w=1280:h=720:force_original_aspect_ratio=decrease,pad=ceil(iw/2)*2:ceil(ih/2)*2[v2out];[v3]scale=w=854:h=480:force_original_aspect_ratio=decrease,pad=ceil(iw/2)*2:ceil(ih/2)*2[v3out]',
-    '-map',
-    '[v1out]'
-  ]
-
-  if (isHasAudio) {
-    args.push('-map', '0:a:0')
+  // 1. Chọn các mức không lớn hơn video gốc (không phóng to). Luôn có ít nhất 1 mức.
+  let levels = LADDER.filter((l) => l.height <= height)
+  if (levels.length === 0) {
+    levels = [{ height: height - (height % 2), bitrate: LADDER[0].bitrate }]
   }
+  // Bitrate không vượt quá video gốc (mức nhỏ hơn thì giảm theo tỉ lệ chiều cao)
+  levels = levels.map((l) => ({
+    ...l,
+    bitrate: bitrate ? Math.round(Math.min(l.bitrate, (bitrate * l.height) / height)) : l.bitrate
+  }))
 
-  args.push('-map', '[v2out]')
+  // 2. Bộ lọc: nhân video thành N bản rồi thu nhỏ từng bản (giữ tỉ lệ, chiều rộng tự làm chẵn)
+  const split = `[0:v]split=${levels.length}` + levels.map((_, i) => `[s${i}]`).join('')
+  const scales = levels.map((l, i) => `[s${i}]scale=-2:${l.height}[o${i}]`).join(';')
 
-  if (isHasAudio) {
-    args.push('-map', '0:a:0')
-  }
+  const args = ['-y', '-i', inputPath, '-filter_complex', `${split};${scales}`]
 
-  args.push('-map', '[v3out]')
+  // 3. Mỗi mức = 1 video (+ 1 audio nếu có)
+  levels.forEach((l, i) => {
+    args.push('-map', `[o${i}]`)
+    if (hasAudio) args.push('-map', '0:a:0')
+    args.push(
+      `-b:v:${i}`,
+      `${l.bitrate}`,
+      `-maxrate:v:${i}`,
+      `${Math.round(l.bitrate * 1.07)}`,
+      `-bufsize:v:${i}`,
+      `${l.bitrate * 2}`
+    )
+  })
 
-  if (isHasAudio) {
-    args.push('-map', '0:a:0')
-  }
-
-  const bitrate720 = bitrate > MAXIMUM_BITRATE_720P ? MAXIMUM_BITRATE_720P : bitrate
-  const bitrate480 = Math.min(bitrate, 1400 * 1000)
-
+  // 4. Cài đặt chung: H.264, nén nhanh, định dạng màu phát được mọi nơi, khung mốc đều nhau giữa các mức
   args.push(
-    '-c:v:0',
+    '-c:v',
     'libx264',
-    '-b:v:0',
-    `${bitrate}`,
-    '-c:v:1',
-    'libx264',
-    '-b:v:1',
-    `${bitrate720}`,
-    '-c:v:2',
-    'libx264',
-    '-b:v:2',
-    `${bitrate480}`,
+    '-preset',
+    'veryfast',
+    '-pix_fmt',
+    'yuv420p',
+    '-g',
+    '48',
+    '-keyint_min',
+    '48',
+    '-sc_threshold',
+    '0',
     '-c:a',
     'aac',
     '-b:a',
-    '128k',
-    '-var_stream_map'
+    '128k'
   )
 
-  if (isHasAudio) {
-    args.push('v:0,a:0 v:1,a:1 v:2,a:2')
-  } else {
-    args.push('v:0 v:1 v:2')
-  }
+  // 5. Xuất HLS: ghép video + audio thành từng nhóm, tạo master.m3u8
+  const streamMap = levels.map((_, i) => (hasAudio ? `v:${i},a:${i}` : `v:${i}`)).join(' ')
+  const toUnix = (p: string) => p.replace(/\\/g, '/')
+
+  await Promise.all(levels.map((_, i) => mkdir(path.join(outDir, `v${i}`), { recursive: true })))
 
   args.push(
+    '-var_stream_map',
+    streamMap,
     '-master_pl_name',
     'master.m3u8',
     '-f',
@@ -175,10 +128,10 @@ export const encodeHLSWithMultipleVideoStreams = async (inputPath: string) => {
     '-hls_list_size',
     '0',
     '-hls_segment_filename',
-    outputSegmentPath,
-    variantPlaylistPath
+    toUnix(path.join(outDir, 'v%v', 'fileSequence%d.ts')),
+    toUnix(path.join(outDir, 'v%v', 'prog_index.m3u8'))
   )
 
-  await runCommand('ffmpeg', args)
+  await run('ffmpeg', args)
   return true
 }
